@@ -4,6 +4,7 @@ import logo from "../images/Logo-LL-dt-fr-it.jpg";
 import './Views.css';
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { logout } from '../actions/auth'
 import { clearMessage } from '../actions/message'
@@ -36,11 +37,13 @@ function Navigation(){
     return (
         <Fragment>
             <div className='navigation'>
-                <div className='links-container'>
-                    <Link to={'/'} className='logo-container'>
-                        <img src={logo} className='logo' alt="logo"/>
-                    </Link>
+                <nav className='navbar navbar-expand navbar-nav bg-transparent'>
                     <div className='navbar-nav mr-auto'>
+                        <li>
+                            <Link to={'/'} className='logo-container'>
+                                <img src={logo} className='logo' alt="logo"/>
+                            </Link>
+                        </li>
                         <li className='nav-item'>
                             <Link to={'/fileUpload'} className='nav-link'>
                                 Upload EDF file
@@ -94,8 +97,8 @@ function Navigation(){
                                 </li>
                             </div>
                         )}
-                    </div>
                 </div>
+                </nav>
             </div>
             <Outlet/>
         </Fragment>

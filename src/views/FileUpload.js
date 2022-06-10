@@ -37,6 +37,8 @@ export default function FileUpload() {
     const [output, setOutput] = useState('')
     const [header, setHeader] = useState('')
     const [measure, setMeasure] = useState('')
+    const [dateHeader, setDateHeader] = useState('')
+    const [date, setDate] = useState('')
 
     const uploadFile = event => { // event reads better than 'e' because a function or a callback
         // could also have an exception as it's first parameter. Changed it for a sake of readability
@@ -59,11 +61,26 @@ export default function FileUpload() {
         const maxPressureIndex = output._header.signalInfo.findIndex( // remove signal index hardcode
             ({ label }) => label.toLowerCase().indexOf('maxpress') > -1
         )
+
+        const dateOfMeasure = output._header.signalInfo.findIndex(
+            ({label}) => label.toLowerCase().indexOf('date') > -1
+        )
+
+        const { labelDate } = output._header.signalInfo[0] // undefined ??
+        const date = output._physicalSignals[dateOfMeasure]
+
         const { label } = output._header.signalInfo[maxPressureIndex]
         const signal = output._physicalSignals[maxPressureIndex]
-        const result = label + ' ' + signal
+
+
+        setDateHeader(labelDate)
+        setDate(date)
+
         setHeader(label)
         setMeasure(signal)
+
+        const result = labelDate + ' , ' + date + '\n' + label + ' , ' + signal
+
         console.log(result); // log result
         download(result, `${label}-${getIsoDate()}.csv`) // save to a file
     }
@@ -82,13 +99,13 @@ export default function FileUpload() {
 
     return (
         <div className="App">
-            <h2> Choose the file edf from ..data folder </h2>
+            <h2> Please choose your edf file  </h2>
             <input type='file' onChange={uploadFile} />
-            <p>Open Javascript console.</p>
+            <p>   </p>
             <div>
                 <label> Print data </label>
-                <button onClick={printData}> Print data </button>
-                <button onClick={showMaxPressure}> Show header </button>
+                <button onClick={printData}> Save all data </button>
+                <button onClick={showMaxPressure}> Save only a header </button>
                 <label> Header : </label>
                 <h2> My configuration is </h2>
 
