@@ -57,6 +57,34 @@ export default function FileUpload() {
         reader.readAsArrayBuffer(files[0]);
     }
 
+    const extractUsageTime = () => {
+        const usageTime = output._header.signalInfo.findIndex(
+            ({label}) => label.toLowerCase().indexOf('onduration') > -1
+        )
+
+        const dateOfUsage = output._header.signalInfo.findIndex(
+            ({label}) => label.toLowerCase().indexOf('date') > -1
+        )
+
+        const { labelDate } = output._header.signalInfo[0] // undefined ??
+        const date = output._physicalSignals[dateOfUsage]
+
+        const { label } = output._header.signalInfo[usageTime]
+        const signal = output._physicalSignals[usageTime]
+
+
+        setDateHeader(labelDate)
+        setDate(date)
+
+        setHeader(label)
+        setMeasure(signal)
+
+        const result = labelDate + ' , ' + date + '\n' + label + ' , ' + signal
+
+        console.log(result); // log result
+        download(result, `${label}-${getIsoDate()}.csv`) // save to a file
+    }
+
     const showMaxPressure = () => {
         const maxPressureIndex = output._header.signalInfo.findIndex( // remove signal index hardcode
             ({ label }) => label.toLowerCase().indexOf('maxpress') > -1
@@ -106,6 +134,7 @@ export default function FileUpload() {
                 <label> Print data </label>
                 <button onClick={printData}> Save all data </button>
                 <button onClick={showMaxPressure}> Save only a header </button>
+                <button onClick={extractUsageTime}> Save usage time </button>
                 <label> Header : </label>
                 <h2> My configuration is </h2>
 

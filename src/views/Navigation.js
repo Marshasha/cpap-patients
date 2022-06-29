@@ -39,9 +39,9 @@ function Navigation(){
             <div className='navigation'>
                 <nav className='navbar navbar-expand navbar-nav bg-transparent'>
                     <div className='navbar-nav mr-auto'>
-                        <li>
-                            <Link to={'/'} className='logo-container'>
-                                <img src={logo} className='logo' alt="logo"/>
+                        <li className='nav-item'>
+                            <Link to={'/usageTime'} className='nav-link'>
+                                See Usage Time
                             </Link>
                         </li>
                         <li className='nav-item'>

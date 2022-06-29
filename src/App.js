@@ -10,6 +10,7 @@ import SignUp from "./views/SignUp";
 import FileUpload from "./views/FileUpload";
 import Profile from "./views/Profile";
 import Home from "./views/Home";
+import UsageTime from "./views/UsageTime";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
                 <Route exact path='/sign-up' element={<SignUp />} />
                 <Route path='/fileUpload' element={<FileUpload/>}/>
                 <Route exact path='/profile' element={<Profile />} />
+                <Route path='/usageTime' element={<UsageTime/>} />
             </Route>
         </Routes>
     </BrowserRouter>
