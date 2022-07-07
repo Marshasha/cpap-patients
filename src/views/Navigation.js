@@ -4,10 +4,9 @@ import './Views.css';
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import '../services/i18n'
 import { USAGE_TIME_KEY, UPLOAD_FILE_KEY} from "../constants/constants";
-
 
 import { logout } from '../actions/auth'
 import { clearMessage } from '../actions/message'

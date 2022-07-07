@@ -1,13 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import MeasureList, {Measure} from "../components/Measure";
+import MeasureList from "../components/Measure";
 import {useParams} from "react-router";
-import {TitleList} from "../components/Title_of_measure";
+import { useTranslation } from 'react-i18next';
 import labels from '../data/jsonplaceholder.labelsList.json';
 import TitlesList from "../components/TitlesList";
 
+
 const edfdecoder = require('edfdecoder');
+const lib = require('csv-transpose')
 
 const decoder = new edfdecoder.EdfDecoder();
+
 
 function readEdfFile( buff ){
     decoder.setInput( buff );
@@ -46,22 +49,28 @@ export default function FileUpload() {
     let [channels, setChannels] = useState([''])
     const [ahi, setAHI] = useState('')
     const [labelList, setLabelList] = useState(labels.listLabels)
+    const { t, i18n } = useTranslation();
 
 
-    const labelsList = ['date', 'duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
+
+    const labelsList = ['date','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
     const {id} = useParams();
 
 
     useEffect(() => {
-
+        console.log( "output " + output)
     }, [output])
     useEffect(()=>{
-     //   console.log("Measures on Upload page" + measures)
+        console.log("Measures in table" + measures)
     },[measures])
     useEffect(()=>{
 
         console.log("UploadFile page - Use effect channels " + channels)
     },[channels])
+
+    useEffect(()=>{
+        console.log("Headers " + header)
+    }, [header])
 
     const uploadFile = event => {
         const { target: { files } } = event
@@ -73,6 +82,7 @@ export default function FileUpload() {
             const { target: { result } } = loadEvent
             const parsed = readEdfFile(result)
             setOutput( parsed )
+            console.log(parsed)
         }
 
         reader.readAsArrayBuffer(files[0]);
@@ -84,11 +94,14 @@ export default function FileUpload() {
         let result = ''
         let table = []
         let average = ''
+        let arr = []
 
         for(let i=0; i<labelsList.length; i++){
+
             const channelNumber = output._header.signalInfo.findIndex(
                 ({label}) => label.toLowerCase().indexOf(labelsList[i]) > -1
             )
+
 
             const  { label } = output._header.signalInfo[channelNumber]
 
@@ -103,6 +116,11 @@ export default function FileUpload() {
                 result = result + label + ' , ' + signal + '\n'
             }
 
+          /*  arr.push(label)
+            arr.push(",")
+            arr.push(signal) */
+
+
             average = calculateAverage(signal)
             table.push(average)
         }
@@ -111,9 +129,67 @@ export default function FileUpload() {
 
         setChannels(table)
 
+        let separator = ','
+        let transposedCSV = lib.transpose(result, separator)
+
         const fileName = 'userID' // to replace with loggedIn user
 
-        download(result, `${fileName}-${getIsoDate()}.csv`) // save to a file
+        download(transposedCSV, `${fileName}-${getIsoDate()}.csv`) // save to a file
+    }
+
+
+
+
+    function writeMapIntoCSV(map){
+
+        console.log([...map.entries()])
+
+        let str = ""
+
+        for(let key of map.keys()){
+            str += key+","
+        }
+        str = str.slice(0,-1)+"\r\n";
+
+        console.log("Map String " + str)
+
+        const [firstValue] = map.values()
+
+        for(let i = 0; i<firstValue.length; i++){
+            let row = ""
+            for(let key of map.keys()){
+                if(map.get(key)[i]){
+                    row += map.get(key)[i]+","
+                }else{
+                    row += ","
+                }
+            }
+            str += row.slice(0, -1)+"\r\n";
+        }
+
+        console.log("Final string " + str)
+        return str
+    }
+
+    function createAndFillTwoArray(row, column, value){
+
+        console.log("Row " + row + " Col " + column + " value " + value)
+        return Array.from({length : row}, () => (
+            Array.from({length : column}, () => value)))
+    }
+
+    function transpose(matrix){
+        console.log("Length before " + matrix[0].length)
+        for (let i = 0; i < matrix[0].length; i++) {
+            for (let j = 0; j < i; j++) {
+                console.log("Data cell" + matrix[i][j])
+                const temp = matrix[i][j];
+                matrix[i][j] = matrix[j][i];
+                matrix[j][i] = temp;
+            }
+        }
+        console.log("Length after " + matrix.length)
+        return matrix;
     }
 
     const printData = () => {
@@ -218,7 +294,7 @@ export default function FileUpload() {
 
     return (
         <div className="App">
-            <h2> Please choose your edf file  </h2>
+            <h2> {t('chooseFile')} </h2>
             <input type='file' onChange={uploadFile} />
             <p>   </p>
             <div>
@@ -227,7 +303,8 @@ export default function FileUpload() {
                 <button onClick={saveCPAPdata} > Save CPAP key data </button>
                 <button onClick={showAHI}> AHI  </button>
 
-                <h2> My configuration is </h2>
+
+                <h2> {t('myData')} </h2>
                 <TitlesList labels={labelList}/>
                 <MeasureList data={channels}/>
 

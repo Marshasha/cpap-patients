@@ -4,5 +4,7 @@ export const TranslationEN = {
     fileUpload : "Upload EDF File",
     login : "LogIn",
     signup : "SignUp",
+    chooseFile: "Please select your EDF file",
+    myData : "My key CPAP data",
 
 }
