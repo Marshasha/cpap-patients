@@ -4,6 +4,8 @@ import {useParams} from "react-router";
 import { useTranslation } from 'react-i18next';
 import labels from '../data/jsonplaceholder.labelsList.json';
 import TitlesList from "../components/TitlesList";
+import axios from "axios";
+import {useDispatch} from "react-redux";
 
 
 const edfdecoder = require('edfdecoder');
@@ -47,9 +49,10 @@ export default function FileUpload() {
     const [measure, setMeasure] = useState('')
     const [measures, setMeasures] = useState([''])
     let [channels, setChannels] = useState([''])
-    const [ahi, setAHI] = useState('')
     const [labelList, setLabelList] = useState(labels.listLabels)
     const { t, i18n } = useTranslation();
+    const [loading, setLoading] = useState(false);
+    const dispatch = useDispatch();
 
 
 
@@ -58,19 +61,19 @@ export default function FileUpload() {
 
 
     useEffect(() => {
-        console.log( "output " + output)
+
     }, [output])
     useEffect(()=>{
-        console.log("Measures in table" + measures)
+
     },[measures])
     useEffect(()=>{
 
-        console.log("UploadFile page - Use effect channels " + channels)
     },[channels])
 
     useEffect(()=>{
-        console.log("Headers " + header)
+
     }, [header])
+
 
     const uploadFile = event => {
         const { target: { files } } = event
@@ -94,14 +97,12 @@ export default function FileUpload() {
         let result = ''
         let table = []
         let average = ''
-        let arr = []
 
         for(let i=0; i<labelsList.length; i++){
 
             const channelNumber = output._header.signalInfo.findIndex(
                 ({label}) => label.toLowerCase().indexOf(labelsList[i]) > -1
             )
-
 
             const  { label } = output._header.signalInfo[channelNumber]
 
@@ -116,12 +117,13 @@ export default function FileUpload() {
                 result = result + label + ' , ' + signal + '\n'
             }
 
-          /*  arr.push(label)
-            arr.push(",")
-            arr.push(signal) */
+            if(i===1){
+                average = calculateAverage(signal)
+                average = Number((average/60).toFixed(1) )               // Usage time from minutes to hours Number((signalAverage).toFixed(1))
+            }else{
+                average = calculateAverage(signal)
+            }
 
-
-            average = calculateAverage(signal)
             table.push(average)
         }
 
@@ -137,60 +139,26 @@ export default function FileUpload() {
         download(transposedCSV, `${fileName}-${getIsoDate()}.csv`) // save to a file
     }
 
+    const postKeyData = () =>{
+        console.log("Measures " + channels)
 
-
-
-    function writeMapIntoCSV(map){
-
-        console.log([...map.entries()])
-
-        let str = ""
-
-        for(let key of map.keys()){
-            str += key+","
-        }
-        str = str.slice(0,-1)+"\r\n";
-
-        console.log("Map String " + str)
-
-        const [firstValue] = map.values()
-
-        for(let i = 0; i<firstValue.length; i++){
-            let row = ""
-            for(let key of map.keys()){
-                if(map.get(key)[i]){
-                    row += map.get(key)[i]+","
-                }else{
-                    row += ","
-                }
-            }
-            str += row.slice(0, -1)+"\r\n";
-        }
-
-        console.log("Final string " + str)
-        return str
+        axios.post('/api/addmeasures', {
+            date : channels[0],
+            averageUsage : channels[1],
+            maxPressure : channels[2],
+            minPressure : channels[3],
+            pressure95 : channels[4],
+            pressureMax : channels[5],
+            leakMax : channels[6],
+            ahi : channels[7],
+            cai : channels[8],
+            uai : channels[9],
+        })
+            .then(response => {
+                console.log(response.data)
+            })
     }
 
-    function createAndFillTwoArray(row, column, value){
-
-        console.log("Row " + row + " Col " + column + " value " + value)
-        return Array.from({length : row}, () => (
-            Array.from({length : column}, () => value)))
-    }
-
-    function transpose(matrix){
-        console.log("Length before " + matrix[0].length)
-        for (let i = 0; i < matrix[0].length; i++) {
-            for (let j = 0; j < i; j++) {
-                console.log("Data cell" + matrix[i][j])
-                const temp = matrix[i][j];
-                matrix[i][j] = matrix[j][i];
-                matrix[j][i] = temp;
-            }
-        }
-        console.log("Length after " + matrix.length)
-        return matrix;
-    }
 
     const printData = () => {
         const result = (output._physicalSignals || [])
@@ -217,7 +185,7 @@ export default function FileUpload() {
 
             if(signalValue < 0) {
 
-                signalCum = signalCum;
+            //    signalCum = signalCum;
                 countNegative = countNegative +1;
 
             }else{
@@ -229,45 +197,6 @@ export default function FileUpload() {
         const signalAverage = signalCum/countPositive;
 
         return Number((signalAverage).toFixed(1));
-    }
-
-    const showAHI = () => {
-       const ahiLabel= output._header.signalInfo.findIndex( // remove signal index hardcode
-            ({ label }) => label.toLowerCase().indexOf('ahi') > -1
-        )
-
-        const { label } = output._header.signalInfo[ahiLabel]
-        console.log("Label " + label)
-        const signal = output._physicalSignals[ahiLabel]
-
-
-        let countPositive = 0;
-        let countNegative = 0;
-        let ahiCum = 0;
-
-
-        for(let i=0; i < signal.length; i++){
-
-            let signalValue = parseFloat(signal[i])
-
-            if(signalValue < 0) {
-                //     console.log("Signal " + signalValue)
-                ahiCum = ahiCum;
-                countNegative = countNegative +1;
-                //     console.log("AHICUM " + ahiCum + " count Negative" + countNegative)
-            }else{
-                countPositive = countPositive + 1;
-                ahiCum = ahiCum + signalValue;
-                //     console.log("AHICUM " + ahiCum + " count Positive " + countPositive)
-            }
-
-        }
-        //   console.log("AHICUM " + ahiCum + " count Positive " + countPositive)
-        const ahiAverage = ahiCum/countPositive;
-        setAHI(ahiAverage);
-        console.log("ahiAverage " + ahiAverage);
-        console.log(" AHI " + ahi)
-
     }
 
     const showAll = () => {
@@ -301,7 +230,7 @@ export default function FileUpload() {
 
                 <button onClick={printData}> Save all data </button>
                 <button onClick={saveCPAPdata} > Save CPAP key data </button>
-                <button onClick={showAHI}> AHI  </button>
+                <button onClick={postKeyData} > {t('saveMyData')}  </button>
 
 
                 <h2> {t('myData')} </h2>

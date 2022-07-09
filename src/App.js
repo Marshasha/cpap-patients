@@ -11,6 +11,7 @@ import FileUpload from "./views/FileUpload";
 import Profile from "./views/Profile";
 import Home from "./views/Home";
 import UsageTime from "./views/UsageTime";
+import DoctorsBoard from "./views/DoctorsBoard";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
                 <Route path='/fileUpload' element={<FileUpload/>}/>
                 <Route exact path='/profile' element={<Profile />} />
                 <Route path='/usageTime' element={<UsageTime/>} />
+                <Route path='/doctorsBoard' element={<DoctorsBoard/>}/>
             </Route>
         </Routes>
     </BrowserRouter>
