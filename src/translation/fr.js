@@ -1,0 +1,22 @@
+export const TranslationFR = {
+    home: "Accueil",
+    usageTime : "Le temps d'utilisation",
+    fileUpload : "Ajouter le fichier EDF",
+    login : "Se connecter",
+    signup : "S'inscrire",
+    chooseFile: "Choisissez votre fichier EDF ",
+    myData : "Mes données ",
+    saveMyData : "Enregistrer mes données",
+    patients : "Mes patients",
+    date : "Date",
+    duration : "L'utilisation moyenne",
+    maxpress : "Pression maximal",
+    minpress : "Pression minimal",
+    tgtipap95 : "Pression 95%",
+    tgtepapmax : "Maximal pression",
+    leakmax : "Fuits maximal",
+    ahi : "AHI",
+    cai : "CAI",
+    uai : "UAI",
+    infoBoard : "Comment ça fonctionne?"
+}

@@ -1,13 +1,18 @@
 import React, {useEffect, useState} from 'react';
-import MeasureList, {Measure} from "../components/Measure";
+import MeasureList from "../components/Measure";
 import {useParams} from "react-router";
-import {TitleList} from "../components/Title_of_measure";
+import { useTranslation } from 'react-i18next';
 import labels from '../data/jsonplaceholder.labelsList.json';
 import TitlesList from "../components/TitlesList";
+import axios from "axios";
+import {useDispatch} from "react-redux";
+
 
 const edfdecoder = require('edfdecoder');
+const lib = require('csv-transpose')
 
 const decoder = new edfdecoder.EdfDecoder();
+
 
 function readEdfFile( buff ){
     decoder.setInput( buff );
@@ -44,11 +49,14 @@ export default function FileUpload() {
     const [measure, setMeasure] = useState('')
     const [measures, setMeasures] = useState([''])
     let [channels, setChannels] = useState([''])
-    const [ahi, setAHI] = useState('')
     const [labelList, setLabelList] = useState(labels.listLabels)
+    const { t, i18n } = useTranslation();
+    const [loading, setLoading] = useState(false);
+    const dispatch = useDispatch();
 
 
-    const labelsList = ['date', 'duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
+
+    const labelsList = ['date','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
     const {id} = useParams();
 
 
@@ -56,12 +64,16 @@ export default function FileUpload() {
 
     }, [output])
     useEffect(()=>{
-     //   console.log("Measures on Upload page" + measures)
+
     },[measures])
     useEffect(()=>{
 
-        console.log("UploadFile page - Use effect channels " + channels)
     },[channels])
+
+    useEffect(()=>{
+
+    }, [header])
+
 
     const uploadFile = event => {
         const { target: { files } } = event
@@ -73,6 +85,7 @@ export default function FileUpload() {
             const { target: { result } } = loadEvent
             const parsed = readEdfFile(result)
             setOutput( parsed )
+            console.log(parsed)
         }
 
         reader.readAsArrayBuffer(files[0]);
@@ -86,6 +99,7 @@ export default function FileUpload() {
         let average = ''
 
         for(let i=0; i<labelsList.length; i++){
+
             const channelNumber = output._header.signalInfo.findIndex(
                 ({label}) => label.toLowerCase().indexOf(labelsList[i]) > -1
             )
@@ -103,7 +117,13 @@ export default function FileUpload() {
                 result = result + label + ' , ' + signal + '\n'
             }
 
-            average = calculateAverage(signal)
+            if(i===1){
+                average = calculateAverage(signal)
+                average = Number((average/60).toFixed(1) )               // Usage time from minutes to hours Number((signalAverage).toFixed(1))
+            }else{
+                average = calculateAverage(signal)
+            }
+
             table.push(average)
         }
 
@@ -111,10 +131,34 @@ export default function FileUpload() {
 
         setChannels(table)
 
+        let separator = ','
+        let transposedCSV = lib.transpose(result, separator)
+
         const fileName = 'userID' // to replace with loggedIn user
 
-        download(result, `${fileName}-${getIsoDate()}.csv`) // save to a file
+        download(transposedCSV, `${fileName}-${getIsoDate()}.csv`) // save to a file
     }
+
+    const postKeyData = () =>{
+        console.log("Measures " + channels)
+
+        axios.post('/api/addmeasures', {
+            date : channels[0],
+            averageUsage : channels[1],
+            maxPressure : channels[2],
+            minPressure : channels[3],
+            pressure95 : channels[4],
+            pressureMax : channels[5],
+            leakMax : channels[6],
+            ahi : channels[7],
+            cai : channels[8],
+            uai : channels[9],
+        })
+            .then(response => {
+                console.log(response.data)
+            })
+    }
+
 
     const printData = () => {
         const result = (output._physicalSignals || [])
@@ -141,7 +185,7 @@ export default function FileUpload() {
 
             if(signalValue < 0) {
 
-                signalCum = signalCum;
+            //    signalCum = signalCum;
                 countNegative = countNegative +1;
 
             }else{
@@ -153,45 +197,6 @@ export default function FileUpload() {
         const signalAverage = signalCum/countPositive;
 
         return Number((signalAverage).toFixed(1));
-    }
-
-    const showAHI = () => {
-       const ahiLabel= output._header.signalInfo.findIndex( // remove signal index hardcode
-            ({ label }) => label.toLowerCase().indexOf('ahi') > -1
-        )
-
-        const { label } = output._header.signalInfo[ahiLabel]
-        console.log("Label " + label)
-        const signal = output._physicalSignals[ahiLabel]
-
-
-        let countPositive = 0;
-        let countNegative = 0;
-        let ahiCum = 0;
-
-
-        for(let i=0; i < signal.length; i++){
-
-            let signalValue = parseFloat(signal[i])
-
-            if(signalValue < 0) {
-                //     console.log("Signal " + signalValue)
-                ahiCum = ahiCum;
-                countNegative = countNegative +1;
-                //     console.log("AHICUM " + ahiCum + " count Negative" + countNegative)
-            }else{
-                countPositive = countPositive + 1;
-                ahiCum = ahiCum + signalValue;
-                //     console.log("AHICUM " + ahiCum + " count Positive " + countPositive)
-            }
-
-        }
-        //   console.log("AHICUM " + ahiCum + " count Positive " + countPositive)
-        const ahiAverage = ahiCum/countPositive;
-        setAHI(ahiAverage);
-        console.log("ahiAverage " + ahiAverage);
-        console.log(" AHI " + ahi)
-
     }
 
     const showAll = () => {
@@ -218,16 +223,17 @@ export default function FileUpload() {
 
     return (
         <div className="App">
-            <h2> Please choose your edf file  </h2>
+            <h2> {t('chooseFile')} </h2>
             <input type='file' onChange={uploadFile} />
             <p>   </p>
             <div>
 
                 <button onClick={printData}> Save all data </button>
                 <button onClick={saveCPAPdata} > Save CPAP key data </button>
-                <button onClick={showAHI}> AHI  </button>
+                <button onClick={postKeyData} > {t('saveMyData')}  </button>
 
-                <h2> My configuration is </h2>
+
+                <h2> {t('myData')} </h2>
                 <TitlesList labels={labelList}/>
                 <MeasureList data={channels}/>
 

@@ -5,3 +5,10 @@ export const LOGIN_FAIL = 'LOGIN_FAIL'
 export const LOGOUT = 'LOGOUT'
 export const SET_MESSAGE = 'SET_MESSAGE'
 export const CLEAR_MESSAGE = 'CLEAR_MESSAGE'
+export const DEFAULT_LANGUAGE = "FR"
+export const DATA_PUSH_SUCCESS = 'DATA WAS SAVED'
+export const DATA_PUSH_FAIL = 'DATA PUSH FAILED'
+
+
+export const USAGE_TIME_KEY = 'USAGE_TIME'
+export const UPLOAD_FILE_KEY = 'UPLOAD_FILE'

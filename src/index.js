@@ -5,6 +5,7 @@ import store from './store'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 import './index.css'
+import './services/i18n'
 
 const container = document.getElementById('root')
 const root = createRoot(container)
