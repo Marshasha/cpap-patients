@@ -18,4 +18,5 @@ export const TranslationFR = {
     ahi : "AHI",
     cai : "CAI",
     uai : "UAI",
+    infoBoard : "Comment ça fonctionne?"
 }

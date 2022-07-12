@@ -20,7 +20,7 @@ export default function LoginPage(props) {
 
     const form = useRef();
     const checkBtn = useRef();
-    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
     const { isLoggedIn } = useSelector(state => state.auth);
@@ -32,7 +32,7 @@ export default function LoginPage(props) {
         setLoading(true)
         form.current.validateAll()
         if (checkBtn.current.context._errors.length === 0) {
-            dispatch(login(username, password))
+            dispatch(login(email, password))
                 .then(() => {
                     // eslint-disable-next-line react/prop-types
                     props.history.push('/profile')
@@ -56,13 +56,13 @@ export default function LoginPage(props) {
               <img src='//ssl.gstatic.com/accounts/ui/avatar_2x.png' alt='profile-img' className='profile-img-card' />
               <Form onSubmit={handleLogin} ref={form}>
                   <div className='form-group'>
-                      <label htmlFor='username'>Username</label>
+                      <label htmlFor='email'>Username</label>
                       <Input
                           type='text'
                           className='form-control'
-                          name='username'
-                          value={username}
-                          onChange={({ target: { value } }) => setUsername(value)}
+                          name='email'
+                          value={email}
+                          onChange={({ target: { value } }) => setEmail(value)}
                           validations={[fieldRequired]}
                       />
                   </div>

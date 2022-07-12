@@ -1,5 +1,5 @@
 import {Link, Outlet} from "react-router-dom";
-import {Fragment, useEffect, useState, useTransition} from 'react';
+import {Fragment, useEffect, useState} from 'react';
 import './Views.css';
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
@@ -54,9 +54,11 @@ function Navigation(){
     }, [dispatch])
 
     useEffect(() => {
+        console.log("User was catched " + JSON.stringify(currentUser))
         if (currentUser) {
-            setShowDoctorBoard(currentUser.roles.includes('ROLE_DOCTOR'))
-            setShowAdminBoard(currentUser.roles.includes('ROLE_ADMIN'))
+            console.log("Current user " + currentUser.user.role)
+            setShowDoctorBoard(currentUser.user.role.includes('ROLE_DOCTOR'))
+            setShowAdminBoard(currentUser.user.role.includes('ROLE_ADMIN'))
         }
     }, [currentUser])
 
@@ -69,21 +71,20 @@ function Navigation(){
             <div className='navigation'>
                 <nav className='navbar navbar-expand navbar-nav bg-transparent'>
                     <div className='navbar-nav mr-auto'>
-                        <li className='nav-item'>
-                            <Link to={'/usageTime'} className='nav-link' >
-                                {t('usageTime')}
-                            </Link>
-                        </li>
-                        <li className='nav-item'>
-                            <Link to={'/fileUpload'} className='nav-link'>
-                                {t('fileUpload')}
-                            </Link>
-                        </li>
-                        <li className='nav-item'>
-                            <Link to={'/doctorsBoard'} className='nav-link'>
-                                {t('patients')}
-                            </Link>
-                        </li>
+
+                            <li className="nav-item">
+                                {Object.keys(lngs).map((lng) => (
+                                    <button key={lng} style={{ fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal' }} type="submit" onClick={() => i18n.changeLanguage(lng)}>
+                                        {lngs[lng].nativeName}
+                                    </button>
+                                ))}
+                            </li>
+                            <li className='nav-item'>
+                                <Link to={'/info'} className='nav-link'>
+                                    {t('infoBoard')}
+                                </Link>
+                            </li>
+
                         {showAdminBoard && (
                             <li className='nav-item'>
                                 <Link to={'/admin'} className='nav-link'>
@@ -93,23 +94,29 @@ function Navigation(){
                         )}
                         {showDoctorBoard && (
                             <li className='nav-item'>
-                                <Link to={'/doctor'} className='nav-link'>
-                                    Doctor Board
+                                <Link to={'/doctorsBoard'} className='nav-link'>
+                                    {t('patients')}
                                 </Link>
                             </li>
                         )}
                         {currentUser && (
                             <li className='nav-item'>
-                                <Link to={'/user'} className='nav-link'>
-                                    User
+                                <Link to={'/fileUpload'} className='nav-link'>
+                                    {t('fileUpload')}
                                 </Link>
                             </li>
+
                         )}
                         {currentUser ? (
                             <div className='navbar-nav ml-auto'>
                                 <li className='nav-item'>
+                                    <Link to={'/usageTime'} className='nav-link' >
+                                        {t('usageTime')}
+                                    </Link>
+                                </li>
+                                <li className='nav-item'>
                                     <Link to={'/profile'} className='nav-link'>
-                                        {currentUser.username}
+                                        {currentUser.user.username}
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
@@ -126,17 +133,11 @@ function Navigation(){
                                     </Link>
                                 </li>
                                 <li className='nav-item'>
-                                    <Link to={'/sign-up'} className='nav-link'>
+                                    <Link to={'/signup'} className='nav-link'>
                                         {t('signup')}
                                     </Link>
                                 </li>
-                                <li>
-                                    {Object.keys(lngs).map((lng) => (
-                                        <button key={lng} style={{ fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal' }} type="submit" onClick={() => i18n.changeLanguage(lng)}>
-                                            {lngs[lng].nativeName}
-                                        </button>
-                                    ))}
-                                </li>
+
                             </div>
                         )}
                 </div>
