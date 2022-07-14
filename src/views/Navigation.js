@@ -54,7 +54,7 @@ function Navigation(){
     }, [dispatch])
 
     useEffect(() => {
-        console.log("User was catched " + JSON.stringify(currentUser))
+        console.log("User was caught " + JSON.stringify(currentUser))
         if (currentUser) {
             console.log("Current user " + currentUser.user.role)
             setShowDoctorBoard(currentUser.user.role.includes('ROLE_DOCTOR'))

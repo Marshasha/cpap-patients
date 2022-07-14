@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import labels from '../data/jsonplaceholder.labelsList.json';
 import TitlesList from "../components/TitlesList";
 import axios from "axios";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 
 
 const edfdecoder = require('edfdecoder');
@@ -51,10 +51,11 @@ export default function FileUpload() {
     let [channels, setChannels] = useState([''])
     const [labelList, setLabelList] = useState(labels.listLabels)
     const { t, i18n } = useTranslation();
+    const [userId, setUserId] = useState('01')
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
 
-
+    const { user: currentUser } = useSelector(state => state.auth)
 
     const labelsList = ['date','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
     const {id} = useParams();
@@ -73,6 +74,11 @@ export default function FileUpload() {
     useEffect(()=>{
 
     }, [header])
+    useEffect(()=>{
+        if(currentUser){
+            setUserId(currentUser.user._id)
+        }
+    }, [userId])
 
 
     const uploadFile = event => {
@@ -108,13 +114,15 @@ export default function FileUpload() {
 
             const signal = output._physicalSignals[channelNumber]
 
+            let labelString = label.replace(/\./g,'').toLowerCase()
+
             setHeader(label)
             setMeasure(signal)
 
             if(i===0){
-                result = label + ' , ' + signal + '\n'
+                result = labelString + ' , ' + signal + '\n'
             }else{
-                result = result + label + ' , ' + signal + '\n'
+                result = result + labelString + ' , ' + signal + '\n'
             }
 
             if(i===1){
@@ -134,7 +142,7 @@ export default function FileUpload() {
         let separator = ','
         let transposedCSV = lib.transpose(result, separator)
 
-        const fileName = 'userID' // to replace with loggedIn user
+        const fileName = userId // to replace with loggedIn user
 
         download(transposedCSV, `${fileName}-${getIsoDate()}.csv`) // save to a file
     }
@@ -142,7 +150,8 @@ export default function FileUpload() {
     const postKeyData = () =>{
         console.log("Measures " + channels)
 
-        axios.post('/api/addmeasures', {
+        axios.post('/api2/addmeasures', {
+            userId : userId,
             date : channels[0],
             averageUsage : channels[1],
             maxPressure : channels[2],

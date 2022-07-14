@@ -7,6 +7,7 @@ export const TranslationEN = {
     chooseFile: "Please select your EDF file",
     saveMyData : "Save my data",
     patients : "The list of my patients",
+    name :  "Name",
     date : "Date",
     duration : "Average Usage",
     maxpress : "Max Pressure",
@@ -17,8 +18,10 @@ export const TranslationEN = {
     ahi : "AHI",
     cai : "CAI",
     uai : "UAI",
-    infoBoard : "How it works ?"
-
+    infoBoard : "How it works ?",
+    emailEnter : "Please, enter your email",
+    passwordEnter : "your password",
+    nodata : "No data uploaded yet",
 
 
 

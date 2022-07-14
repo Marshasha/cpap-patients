@@ -8,6 +8,7 @@ export const TranslationFR = {
     myData : "Mes données ",
     saveMyData : "Enregistrer mes données",
     patients : "Mes patients",
+    name :  "Nom",
     date : "Date",
     duration : "L'utilisation moyenne",
     maxpress : "Pression maximal",
@@ -18,5 +19,8 @@ export const TranslationFR = {
     ahi : "AHI",
     cai : "CAI",
     uai : "UAI",
-    infoBoard : "Comment ça fonctionne?"
+    infoBoard : "Comment ça fonctionne?",
+    emailEnter : "Entrez votre email",
+    passwordEnter : "et votre mot de pass",
+    nodata : "Il n'y a pas des données",
 }
