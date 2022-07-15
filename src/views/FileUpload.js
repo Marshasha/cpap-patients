@@ -6,8 +6,9 @@ import labels from '../data/jsonplaceholder.labelsList.json';
 import TitlesList from "../components/TitlesList";
 import axios from "axios";
 import {useDispatch, useSelector} from "react-redux";
+import * as Duration from "luxon";
 
-
+const { DateTime } = require("luxon");
 const edfdecoder = require('edfdecoder');
 const lib = require('csv-transpose')
 
@@ -53,6 +54,7 @@ export default function FileUpload() {
     const { t, i18n } = useTranslation();
     const [userId, setUserId] = useState('01')
     const [loading, setLoading] = useState(false);
+    const [file, setFile] = useState('')
     const dispatch = useDispatch();
 
     const { user: currentUser } = useSelector(state => state.auth)
@@ -104,7 +106,35 @@ export default function FileUpload() {
         let table = []
         let average = ''
 
-        for(let i=0; i<labelsList.length; i++){
+        /**
+         * Date settings
+         */
+
+        let startingDateString = output._header.localRecordingId
+        let startingDate = startingDateString.slice(10,21)
+        const format = "dd-LLL-yyyy"
+
+        let date = DateTime.fromFormat(startingDate, format)
+        let dateString = date.toString().slice(0,10)
+        console.log("DateString " + dateString)
+
+        const signal = output._physicalSignals[0]
+
+        for(let i=0; i<signal.length; i++){
+            signal[i] = dateString
+            date = date.plus({days : 1})
+            dateString = date.toString().slice(0,10)
+        }
+
+        result = 'date' + ' , ' + signal + '\n'
+        date = date.minus({days : 1}).toString().slice(0,10)
+        table.push(date)
+
+        /**
+         * Other channels settings
+         */
+
+        for(let i=1; i<labelsList.length; i++){
 
             const channelNumber = output._header.signalInfo.findIndex(
                 ({label}) => label.toLowerCase().indexOf(labelsList[i]) > -1
@@ -119,15 +149,15 @@ export default function FileUpload() {
             setHeader(label)
             setMeasure(signal)
 
-            if(i===0){
-                result = labelString + ' , ' + signal + '\n'
-            }else{
-                result = result + labelString + ' , ' + signal + '\n'
-            }
+
+            result = result + labelString + ' , ' + signal + '\n'
+
 
             if(i===1){
                 average = calculateAverage(signal)
-                average = Number((average/60).toFixed(1) )               // Usage time from minutes to hours Number((signalAverage).toFixed(1))
+                let dur = Duration.Duration.fromObject( {minutes : average})
+                average = dur.toFormat('hh:mm').toString()
+
             }else{
                 average = calculateAverage(signal)
             }
@@ -142,13 +172,22 @@ export default function FileUpload() {
         let separator = ','
         let transposedCSV = lib.transpose(result, separator)
 
+    /*    setFile(transposedCSV)
+        postCPAPdata() */
+
         const fileName = userId // to replace with loggedIn user
 
         download(transposedCSV, `${fileName}-${getIsoDate()}.csv`) // save to a file
     }
 
+    const postCPAPdata = () => {
+        console.log("File is cteated " + file.length)
+
+        axios.post('/api3/upload-csv-file', file)
+
+    }
+
     const postKeyData = () =>{
-        console.log("Measures " + channels)
 
         axios.post('/api2/addmeasures', {
             userId : userId,
@@ -167,7 +206,6 @@ export default function FileUpload() {
                 console.log(response.data)
             })
     }
-
 
     const printData = () => {
         const result = (output._physicalSignals || [])
@@ -206,28 +244,6 @@ export default function FileUpload() {
         const signalAverage = signalCum/countPositive;
 
         return Number((signalAverage).toFixed(1));
-    }
-
-    const showAll = () => {
-        (output._physicalSignals || []).map((value, index) => {
-
-            const {label} = output._header.signalInfo[index]
-
-            const dataString = output._physicalSignals[index]
-
-            return (<>
-                <div key={value.id}>
-                    <b>{label}</b>
-                    <pre>{
-                        value.slice(0, 5).join(',')
-                    }...</pre>
-                    <pre>{
-                        dataString.slice(0, 10).join( ' ')
-                    }...</pre>
-                </div>
-
-            </>)
-        })
     }
 
     return (

@@ -1,10 +1,20 @@
 import React, {Component, useEffect, useState} from "react";
 import {Row,Col, Card} from "react-bootstrap";
 import Container from "react-bootstrap/Container";
+import {MDBTable, MDBTableBody, MDBTableHead} from "mdbreact";
+import Table from "react-bootstrap/Table";
 
 export default function MeasureList(props){
 
-    console.log("Props were sent " + props.data + " object " + props.data.typeOf)
+    console.log("Props were sent " + props.data)
+
+ /*   return (
+        <div>
+            {props.data.map((measure, index)=>(
+               <p key={index}>{measure}</p>
+            ))}
+        </div>
+    ) */
 
 
     return(

@@ -14,5 +14,12 @@ module.exports = function(app) {
             target : 'http://localhost:8181',
             changeOrigin : true,
         })
+    );
+    app.use(
+        'api3',
+        createProxyMiddleware({
+            target: 'http://localhost:5000',
+            changeOrigin : true,
+        })
     )
 };
