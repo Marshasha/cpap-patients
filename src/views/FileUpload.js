@@ -51,6 +51,7 @@ export default function FileUpload() {
     const [measures, setMeasures] = useState([''])
     let [channels, setChannels] = useState([''])
     const [labelList, setLabelList] = useState(labels.listLabels)
+    const [daysOfUsage, setDaysOfUsage] = useState(0)
     const { t, i18n } = useTranslation();
     const [userId, setUserId] = useState('01')
     const [loading, setLoading] = useState(false);
@@ -59,7 +60,7 @@ export default function FileUpload() {
 
     const { user: currentUser } = useSelector(state => state.auth)
 
-    const labelsList = ['date','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
+    const labelsList = ['days','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
     const {id} = useParams();
 
 
@@ -81,6 +82,9 @@ export default function FileUpload() {
             setUserId(currentUser.user._id)
         }
     }, [userId])
+  /*  useEffect(()=>{
+        console.log("Days of usage in Effect " + daysOfUsage)
+    },[daysOfUsage]) */
 
 
     const uploadFile = event => {
@@ -132,6 +136,7 @@ export default function FileUpload() {
 
         /**
          * Other channels settings
+         *
          */
 
         for(let i=1; i<labelsList.length; i++){
@@ -152,9 +157,23 @@ export default function FileUpload() {
 
             result = result + labelString + ' , ' + signal + '\n'
 
+            /**
+             * Setup of days of usage and average usage
+             * the signal of Duration, if it's negative => it was not used, if it's positive we calculate the average usage time
+             */
 
-            if(i===1){
+
+
+            if(i===1){ // the label Duration == 1
                 average = calculateAverage(signal)
+                let days = countDaysOfUsage(signal)
+
+                console.log("Days of usage " + days + " signal length " + signal.length)
+                let ratioOfUsage = Number(days / parseInt(signal.length ) * 100).toFixed(1)
+                let ratioOfUsageString = ratioOfUsage + ' % '
+                console.log("ratioOfUsageString " + ratioOfUsageString)
+                table.push(ratioOfUsageString)
+
                 let dur = Duration.Duration.fromObject( {minutes : average})
                 average = dur.toFormat('hh:mm').toString()
 
@@ -192,15 +211,16 @@ export default function FileUpload() {
         axios.post('/api2/addmeasures', {
             userId : userId,
             date : channels[0],
-            averageUsage : channels[1],
-            maxPressure : channels[2],
-            minPressure : channels[3],
-            pressure95 : channels[4],
-            pressureMax : channels[5],
-            leakMax : channels[6],
-            ahi : channels[7],
-            cai : channels[8],
-            uai : channels[9],
+            ratioOfUsage : channels[1],
+            averageUsage : channels[2],
+            maxPressure : channels[3],
+            minPressure : channels[4],
+            pressure95 : channels[5],
+            pressureMax : channels[6],
+            leakMax : channels[7],
+            ahi : channels[8],
+            cai : channels[9],
+            uai : channels[10],
         })
             .then(response => {
                 console.log(response.data)
@@ -217,6 +237,23 @@ export default function FileUpload() {
 
           console.log(result); // log result
         download(result, `result-${getIsoDate()}.csv`) // save to a file
+    }
+
+    function countDaysOfUsage(signal){
+        let days = 0
+
+        for(let i=0; i<signal.length; i++){
+
+            let signalValue = parseFloat(signal[i])
+
+            if(signalValue < 0) {
+                days = days + 1
+            }
+        }
+
+        console.log("days " + days)
+
+        return days
     }
 
     function calculateAverage (signal) {
@@ -239,6 +276,7 @@ export default function FileUpload() {
                 countPositive = countPositive + 1;
                 signalCum = signalCum + signalValue;
             }
+
         }
 
         const signalAverage = signalCum/countPositive;

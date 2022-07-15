@@ -10,6 +10,7 @@ export const TranslationFR = {
     patients : "Mes patients",
     name :  "Nom",
     date : "Date",
+    daysOfUsage : "Jours de l'utilisation",
     duration : "L'utilisation moyenne",
     maxpress : "Pression maximal",
     minpress : "Pression minimal",

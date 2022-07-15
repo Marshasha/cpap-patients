@@ -8,7 +8,7 @@ import { MDBTable, MDBTableBody, MDBTableHead} from "mdbreact";
 
 export default function DoctorsBoard(){
 
-    const labelList = ['date','duration', 'maxpress', 'minpress', 'tgtipap95', 'tgtepapmax', 'leakmax', 'ahi','cai', 'uai'  ]
+    const labelList = ['date', 'daysOfUsage','duration', 'maxpress', 'minpress', 'tgtipap95', 'tgtepapmax', 'leakmax', 'ahi','cai', 'uai'  ]
 
     const [measureslist, setMeasuresList ] = useState([])
     const [patients, setPatients] = useState([])
@@ -52,18 +52,16 @@ export default function DoctorsBoard(){
 
                 const userMeasures =  measureslist.find(({ userId}) => userId === key)
 
-                const arr1 = JSON.stringify(patients[0])
-                const arr2 = JSON.stringify(userMeasures)
+                const arr = JSON.stringify(userMeasures)
 
-                console.log("Measures " + arr2)
+                console.log("Measures " + arr)
 
-                if(arr2){
+                if(arr){
                     joinedNamesAndMeasures.push({username : patients[i].username, ...userMeasures})
 
-                //    joinedNamesAndMeasures.push(...userMeasures)
+
                 }else{
-                    joinedNamesAndMeasures.push({username : patients[i].username})
-                    joinedNamesAndMeasures.push({date : infoString})
+                    joinedNamesAndMeasures.push({username : patients[i].username, date : infoString})
                 }
             }
 
@@ -82,8 +80,6 @@ export default function DoctorsBoard(){
     }, [patients, measureslist])
 
 
-
-
     return (
         <div>
             <h1>{t('patients')}</h1>
@@ -95,11 +91,12 @@ export default function DoctorsBoard(){
                         <th key={index}>{t(label)}</th>
                     ))}
                 </tr>
-                {Array.from(list).map((measure)=>(
-                    <tr key={measure._id}>
+                {Array.from(list).map((measure, index)=>(
+                    <tr key={index}>
                         <td>{measure.username}</td>
                         <td>{measure.date}</td>
-                        <td>{measure.averageUsage}</td>
+                        <td style={parseInt(measure.ratioOfUsage) > 70 ? { color : 'green'}:{color: 'red'}}>{measure.ratioOfUsage}</td>
+                        <td style={parseInt(measure.averageUsage) > 4 ? { color : 'green'}:{color: 'red'}}>{measure.averageUsage}</td>
                         <td>{measure.maxPressure}</td>
                         <td>{measure.minPressure}</td>
                         <td>{measure.pressure95}</td>
@@ -112,31 +109,6 @@ export default function DoctorsBoard(){
                 ))}
                 </tbody>
             </Table>
-            <MDBTable btn fixed>
-                <MDBTableHead class="bg-success bg-gradient text-white">
-                    <tr>
-                        <th>Name</th>
-                        {Array.from(labelList).map((label,index)=>(
-                            <th key={index}>{t(label)}</th>
-                        ))}
-                    </tr>
-                </MDBTableHead>
-                <MDBTableBody children={measureslist.map((measure)=>(
-                    <tr key={measure._id}>
-                        <td>{measure.index}</td>
-                        <td>{measure.date}</td>
-                        <td className="far fa-clock" aria-hidden="true">{measure.averageUsage}</td>
-                        <td>{measure.maxPressure}</td>
-                        <td>{measure.minPressure}</td>
-                        <td>{measure.pressure95}</td>
-                        <td>{measure.pressureMax}</td>
-                        <td>{measure.leakMax}</td>
-                        <td>{measure.ahi}</td>
-                        <td>{measure.cai}</td>
-                        <td>{measure.uai}</td>
-                    </tr>
-                ))}/>
-            </MDBTable>
         </div>
 
     )

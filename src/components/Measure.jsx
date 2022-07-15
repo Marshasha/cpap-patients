@@ -6,17 +6,6 @@ import Table from "react-bootstrap/Table";
 
 export default function MeasureList(props){
 
-    console.log("Props were sent " + props.data)
-
- /*   return (
-        <div>
-            {props.data.map((measure, index)=>(
-               <p key={index}>{measure}</p>
-            ))}
-        </div>
-    ) */
-
-
     return(
         <Container fluid="sm, md">
             <Row className="justify-content-sm-center">

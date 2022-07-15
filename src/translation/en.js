@@ -9,6 +9,7 @@ export const TranslationEN = {
     patients : "The list of my patients",
     name :  "Name",
     date : "Date",
+    daysOfUsage : "Days of Usage",
     duration : "Average Usage",
     maxpress : "Max Pressure",
     minpress : "Min Pressure",

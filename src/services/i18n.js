@@ -4,6 +4,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import { DEFAULT_LANGUAGE } from "../constants/constants";
 import { TranslationEN } from "../translation/en";
 import { TranslationFR } from "../translation/fr";
+import { TranslationDE} from "../translation/de";
 
 
 const resources = {
@@ -13,6 +14,9 @@ const resources = {
     FR: {
         translation: TranslationFR,
     },
+    DE: {
+        translation: TranslationDE,
+    }
 };
 
 i18n
