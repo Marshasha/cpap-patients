@@ -3,7 +3,8 @@ import React, {useEffect, useState} from 'react'
 import {useTranslation} from "react-i18next";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
-import { MDBTable, MDBTableBody, MDBTableHead} from "mdbreact";
+import {useSelector} from "react-redux";
+
 
 
 export default function DoctorsBoard(){
@@ -13,6 +14,7 @@ export default function DoctorsBoard(){
     const [measureslist, setMeasuresList ] = useState([])
     const [patients, setPatients] = useState([])
     const [list, setList] = useState([])
+    const { user: currentUser } = useSelector(state => state.auth)
 
     const { t, i18n } = useTranslation();
 
@@ -28,7 +30,7 @@ export default function DoctorsBoard(){
 
     useEffect(()=>{
 
-    axios.get('/api/users/patients')
+    axios.get('/api/users/patients', {headers : {"Authorization" : `Bearer ${currentUser.token}`} })
         .then(response =>{
             setPatients(response.data)
             console.log("Data from 3090 " + JSON.stringify(response.data))

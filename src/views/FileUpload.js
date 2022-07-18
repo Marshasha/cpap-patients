@@ -2,11 +2,13 @@ import React, {useEffect, useState} from 'react';
 import MeasureList from "../components/Measure";
 import {useParams} from "react-router";
 import { useTranslation } from 'react-i18next';
-import labels from '../data/jsonplaceholder.labelsList.json';
 import TitlesList from "../components/TitlesList";
 import axios from "axios";
 import {useDispatch, useSelector} from "react-redux";
 import * as Duration from "luxon";
+import {history} from "../helpers/history";
+import {clearMessage} from "../actions/message";
+import { LABELS_LIST } from "../constants/constants";
 
 const { DateTime } = require("luxon");
 const edfdecoder = require('edfdecoder');
@@ -49,22 +51,31 @@ export default function FileUpload() {
     const [header, setHeader] = useState('')
     const [measure, setMeasure] = useState('')
     const [measures, setMeasures] = useState([''])
-    let [channels, setChannels] = useState([''])
-    const [labelList, setLabelList] = useState(labels.listLabels)
-    const [daysOfUsage, setDaysOfUsage] = useState(0)
+    const [labelList, setLabelList] = useState(LABELS_LIST)
     const { t, i18n } = useTranslation();
     const [userId, setUserId] = useState('01')
-    const [loading, setLoading] = useState(false);
+    const [showCSVSave, setShowCSVSave] = useState(false);
     const [file, setFile] = useState('')
     const dispatch = useDispatch();
 
     const { user: currentUser } = useSelector(state => state.auth)
+    let [channels, setChannels] = useState([t('nodata')])
 
     const labelsList = ['days','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
     const {id} = useParams();
 
+    useEffect(() => {
+        history.listen(() => {
+            dispatch(clearMessage()) // clear message when changing location
+        })
+    }, [dispatch])
 
     useEffect(() => {
+
+        if(output){
+
+            showCPAPdata()
+        }
 
     }, [output])
     useEffect(()=>{
@@ -80,11 +91,14 @@ export default function FileUpload() {
     useEffect(()=>{
         if(currentUser){
             setUserId(currentUser.user._id)
+            setShowCSVSave(currentUser.user.role.includes('ROLE_DOCTOR'))
         }
-    }, [userId])
-  /*  useEffect(()=>{
-        console.log("Days of usage in Effect " + daysOfUsage)
-    },[daysOfUsage]) */
+    }, [userId, currentUser])
+
+    useEffect(()=>{
+        console.log("File " + file.length)
+    }, [file])
+
 
 
     const uploadFile = event => {
@@ -102,9 +116,10 @@ export default function FileUpload() {
 
         reader.readAsArrayBuffer(files[0]);
 
+
     }
 
-    const saveCPAPdata = () => {
+    const showCPAPdata = () => {
 
         let result = ''
         let table = []
@@ -191,12 +206,19 @@ export default function FileUpload() {
         let separator = ','
         let transposedCSV = lib.transpose(result, separator)
 
-    /*    setFile(transposedCSV)
-        postCPAPdata() */
+        setFile(transposedCSV)
+     //   postCPAPdata()
+
+     //   const fileName = userId // to replace with loggedIn user
+
+     //   download(transposedCSV, `${fileName}-${getIsoDate()}.csv`) // save to a file
+    }
+
+    const saveCPAPdata = () => {
 
         const fileName = userId // to replace with loggedIn user
 
-        download(transposedCSV, `${fileName}-${getIsoDate()}.csv`) // save to a file
+        download(file, `${fileName}-${getIsoDate()}.csv`) // save to a file
     }
 
     const postCPAPdata = () => {
@@ -290,9 +312,10 @@ export default function FileUpload() {
             <input type='file' onChange={uploadFile} />
             <p>   </p>
             <div>
-
-                <button onClick={printData}> Save all data </button>
-                <button onClick={saveCPAPdata} > Save CPAP key data </button>
+                { showCSVSave && (
+                    <button onClick={printData}> {t('saveCSV_ALL')} </button>
+                )}
+                <button onClick={saveCPAPdata} > {t('saveSCV_MINE')} </button>
                 <button onClick={postKeyData} > {t('saveMyData')}  </button>
 
 

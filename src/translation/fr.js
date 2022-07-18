@@ -6,7 +6,7 @@ export const TranslationFR = {
     signup : "S'inscrire",
     chooseFile: "Choisissez votre fichier EDF ",
     myData : "Mes données ",
-    saveMyData : "Enregistrer mes données",
+    saveMyData : "Envoyer mes données",
     patients : "Mes patients",
     name :  "Nom",
     date : "Date",
@@ -24,4 +24,6 @@ export const TranslationFR = {
     emailEnter : "Entrez votre email",
     passwordEnter : "et votre mot de pass",
     nodata : "Il n'y a pas des données",
+    saveCSV_ALL : "Enregistrer tous les données  ",
+    saveSCV_MINE : " Enregistrer mes données en .csv"
 }

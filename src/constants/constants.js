@@ -12,3 +12,4 @@ export const DATA_PUSH_FAIL = 'DATA PUSH FAILED'
 
 export const USAGE_TIME_KEY = 'USAGE_TIME'
 export const UPLOAD_FILE_KEY = 'UPLOAD_FILE'
+export const LABELS_LIST = ['date', 'daysOfUsage','duration', 'maxpress', 'minpress', 'tgtipap95', 'tgtepapmax', 'leakmax', 'ahi','cai', 'uai'  ]
