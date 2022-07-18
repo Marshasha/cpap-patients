@@ -5,6 +5,7 @@ import CheckButton from 'react-validation/build/button';
 import {Navigate} from "react-router";
 import { useDispatch, useSelector } from 'react-redux';
 import {login} from '../actions/auth';
+import {useTranslation} from "react-i18next";
 
 const fieldRequired = value => {
     if (!value) {
@@ -23,6 +24,7 @@ export default function LoginPage(props) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
+    const { t, i18n } = useTranslation();
     const { isLoggedIn } = useSelector(state => state.auth);
     const { message } = useSelector(state => state.message);
     const dispatch = useDispatch();
@@ -56,7 +58,7 @@ export default function LoginPage(props) {
               <img src='//ssl.gstatic.com/accounts/ui/avatar_2x.png' alt='profile-img' className='profile-img-card' />
               <Form onSubmit={handleLogin} ref={form}>
                   <div className='form-group'>
-                      <label htmlFor='email'>Username</label>
+                      <label htmlFor='email'>{t('emailEnter')}</label>
                       <Input
                           type='text'
                           className='form-control'
@@ -67,7 +69,7 @@ export default function LoginPage(props) {
                       />
                   </div>
                   <div className='form-group'>
-                      <label htmlFor='password'>Password</label>
+                      <label htmlFor='password'>{t('passwordEnter')}</label>
                       <Input
                           type='password'
                           className='form-control'

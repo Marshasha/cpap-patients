@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
-import usagetime from "../data/OnDuration.csv";
+//import usagetime from "../data/OnDuration.csv";
+import usagetime from "../data/62ce8d0d6f99d1493af52d9e-2022-07-18T10 16 11.622Z.csv";
 
 const MARGIN = { TOP : 10, BOTTOM : 50, LEFT : 70, RIGHT : 10}
 const WIDTH = 1000 -MARGIN.LEFT -MARGIN.RIGHT;
@@ -38,7 +39,7 @@ export default class D3Chart {
 
             const x = d3.scaleBand()
                 .domain(figures.map(d => {
-                    return d.date
+                    return d.time
                 }))
                 .range([0, WIDTH])
                 .padding(0.4)
@@ -69,7 +70,7 @@ export default class D3Chart {
 
             rects.enter()
                 .append("rect")
-                .attr("x", d => x(d.date))
+                .attr("x", d => x(d.time))
                 .attr("y", d => y(d.time/60))
                 .attr("width", x.bandwidth)
                 .attr("height",d => HEIGHT - y(d.time/60))

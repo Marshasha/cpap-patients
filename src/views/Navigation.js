@@ -6,13 +6,11 @@ import {useDispatch, useSelector} from "react-redux";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useTranslation } from 'react-i18next';
 import '../services/i18n'
-import { USAGE_TIME_KEY, UPLOAD_FILE_KEY} from "../constants/constants";
 
 import { logout } from '../actions/auth'
 import { clearMessage } from '../actions/message'
 import { history } from '../helpers/history'
-import UsageTime from "./UsageTime";
-import FileUpload from "./FileUpload";
+
 
 
 
@@ -23,19 +21,6 @@ const lngs = {
     IT: { nativeName: 'IT' },
 }
 
-const urls = [
-    {
-        pageKey : USAGE_TIME_KEY,
-        navigationScreen : UsageTime,
-        translateKey : "usageTime",
-
-    },
-    {
-        pageKey : UPLOAD_FILE_KEY,
-        navigationScreen : FileUpload,
-        translateKey : "fileUpload",
-    }
-]
 
 function Navigation(){
 
@@ -54,9 +39,9 @@ function Navigation(){
     }, [dispatch])
 
     useEffect(() => {
-        console.log("User was catched " + JSON.stringify(currentUser))
+
         if (currentUser) {
-            console.log("Current user " + currentUser.user.role)
+            console.log("Current user " + currentUser.user.role + " Token " + currentUser.token)
             setShowDoctorBoard(currentUser.user.role.includes('ROLE_DOCTOR'))
             setShowAdminBoard(currentUser.user.role.includes('ROLE_ADMIN'))
         }

@@ -6,9 +6,11 @@ export const TranslationFR = {
     signup : "S'inscrire",
     chooseFile: "Choisissez votre fichier EDF ",
     myData : "Mes données ",
-    saveMyData : "Enregistrer mes données",
+    saveMyData : "Envoyer mes données",
     patients : "Mes patients",
+    name :  "Nom",
     date : "Date",
+    daysOfUsage : "Jours de l'utilisation",
     duration : "L'utilisation moyenne",
     maxpress : "Pression maximal",
     minpress : "Pression minimal",
@@ -18,5 +20,10 @@ export const TranslationFR = {
     ahi : "AHI",
     cai : "CAI",
     uai : "UAI",
-    infoBoard : "Comment ça fonctionne?"
+    infoBoard : "Comment ça fonctionne?",
+    emailEnter : "Entrez votre email",
+    passwordEnter : "et votre mot de pass",
+    nodata : "Il n'y a pas des données",
+    saveCSV_ALL : "Enregistrer tous les données  ",
+    saveSCV_MINE : " Enregistrer mes données en .csv"
 }

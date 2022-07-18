@@ -2,12 +2,15 @@ import React, {useEffect, useState} from 'react';
 import MeasureList from "../components/Measure";
 import {useParams} from "react-router";
 import { useTranslation } from 'react-i18next';
-import labels from '../data/jsonplaceholder.labelsList.json';
 import TitlesList from "../components/TitlesList";
 import axios from "axios";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import * as Duration from "luxon";
+import {history} from "../helpers/history";
+import {clearMessage} from "../actions/message";
+import { LABELS_LIST } from "../constants/constants";
 
-
+const { DateTime } = require("luxon");
 const edfdecoder = require('edfdecoder');
 const lib = require('csv-transpose')
 
@@ -48,19 +51,31 @@ export default function FileUpload() {
     const [header, setHeader] = useState('')
     const [measure, setMeasure] = useState('')
     const [measures, setMeasures] = useState([''])
-    let [channels, setChannels] = useState([''])
-    const [labelList, setLabelList] = useState(labels.listLabels)
+    const [labelList, setLabelList] = useState(LABELS_LIST)
     const { t, i18n } = useTranslation();
-    const [loading, setLoading] = useState(false);
+    const [userId, setUserId] = useState('01')
+    const [showCSVSave, setShowCSVSave] = useState(false);
+    const [file, setFile] = useState('')
     const dispatch = useDispatch();
 
+    const { user: currentUser } = useSelector(state => state.auth)
+    let [channels, setChannels] = useState([t('nodata')])
 
-
-    const labelsList = ['date','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
+    const labelsList = ['days','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
     const {id} = useParams();
 
+    useEffect(() => {
+        history.listen(() => {
+            dispatch(clearMessage()) // clear message when changing location
+        })
+    }, [dispatch])
 
     useEffect(() => {
+
+        if(output){
+
+            showCPAPdata()
+        }
 
     }, [output])
     useEffect(()=>{
@@ -73,6 +88,17 @@ export default function FileUpload() {
     useEffect(()=>{
 
     }, [header])
+    useEffect(()=>{
+        if(currentUser){
+            setUserId(currentUser.user._id)
+            setShowCSVSave(currentUser.user.role.includes('ROLE_DOCTOR'))
+        }
+    }, [userId, currentUser])
+
+    useEffect(()=>{
+        console.log("File " + file.length)
+    }, [file])
+
 
 
     const uploadFile = event => {
@@ -90,15 +116,45 @@ export default function FileUpload() {
 
         reader.readAsArrayBuffer(files[0]);
 
+
     }
 
-    const saveCPAPdata = () => {
+    const showCPAPdata = () => {
 
         let result = ''
         let table = []
         let average = ''
 
-        for(let i=0; i<labelsList.length; i++){
+        /**
+         * Date settings
+         */
+
+        let startingDateString = output._header.localRecordingId
+        let startingDate = startingDateString.slice(10,21)
+        const format = "dd-LLL-yyyy"
+
+        let date = DateTime.fromFormat(startingDate, format)
+        let dateString = date.toString().slice(0,10)
+        console.log("DateString " + dateString)
+
+        const signal = output._physicalSignals[0]
+
+        for(let i=0; i<signal.length; i++){
+            signal[i] = dateString
+            date = date.plus({days : 1})
+            dateString = date.toString().slice(0,10)
+        }
+
+        result = 'date' + ' , ' + signal + '\n'
+        date = date.minus({days : 1}).toString().slice(0,10)
+        table.push(date)
+
+        /**
+         * Other channels settings
+         *
+         */
+
+        for(let i=1; i<labelsList.length; i++){
 
             const channelNumber = output._header.signalInfo.findIndex(
                 ({label}) => label.toLowerCase().indexOf(labelsList[i]) > -1
@@ -108,18 +164,34 @@ export default function FileUpload() {
 
             const signal = output._physicalSignals[channelNumber]
 
+            let labelString = label.replace(/\./g,'').toLowerCase()
+
             setHeader(label)
             setMeasure(signal)
 
-            if(i===0){
-                result = label + ' , ' + signal + '\n'
-            }else{
-                result = result + label + ' , ' + signal + '\n'
-            }
 
-            if(i===1){
+            result = result + labelString + ' , ' + signal + '\n'
+
+            /**
+             * Setup of days of usage and average usage
+             * the signal of Duration, if it's negative => it was not used, if it's positive we calculate the average usage time
+             */
+
+
+
+            if(i===1){ // the label Duration == 1
                 average = calculateAverage(signal)
-                average = Number((average/60).toFixed(1) )               // Usage time from minutes to hours Number((signalAverage).toFixed(1))
+                let days = countDaysOfUsage(signal)
+
+                console.log("Days of usage " + days + " signal length " + signal.length)
+                let ratioOfUsage = Number(days / parseInt(signal.length ) * 100).toFixed(1)
+                let ratioOfUsageString = ratioOfUsage + ' % '
+                console.log("ratioOfUsageString " + ratioOfUsageString)
+                table.push(ratioOfUsageString)
+
+                let dur = Duration.Duration.fromObject( {minutes : average})
+                average = dur.toFormat('hh:mm').toString()
+
             }else{
                 average = calculateAverage(signal)
             }
@@ -134,31 +206,48 @@ export default function FileUpload() {
         let separator = ','
         let transposedCSV = lib.transpose(result, separator)
 
-        const fileName = 'userID' // to replace with loggedIn user
+        setFile(transposedCSV)
+     //   postCPAPdata()
 
-        download(transposedCSV, `${fileName}-${getIsoDate()}.csv`) // save to a file
+     //   const fileName = userId // to replace with loggedIn user
+
+     //   download(transposedCSV, `${fileName}-${getIsoDate()}.csv`) // save to a file
+    }
+
+    const saveCPAPdata = () => {
+
+        const fileName = userId // to replace with loggedIn user
+
+        download(file, `${fileName}-${getIsoDate()}.csv`) // save to a file
+    }
+
+    const postCPAPdata = () => {
+        console.log("File is cteated " + file.length)
+
+        axios.post('/api3/upload-csv-file', file)
+
     }
 
     const postKeyData = () =>{
-        console.log("Measures " + channels)
 
-        axios.post('/api/addmeasures', {
+        axios.post('/api2/addmeasures', {
+            userId : userId,
             date : channels[0],
-            averageUsage : channels[1],
-            maxPressure : channels[2],
-            minPressure : channels[3],
-            pressure95 : channels[4],
-            pressureMax : channels[5],
-            leakMax : channels[6],
-            ahi : channels[7],
-            cai : channels[8],
-            uai : channels[9],
+            ratioOfUsage : channels[1],
+            averageUsage : channels[2],
+            maxPressure : channels[3],
+            minPressure : channels[4],
+            pressure95 : channels[5],
+            pressureMax : channels[6],
+            leakMax : channels[7],
+            ahi : channels[8],
+            cai : channels[9],
+            uai : channels[10],
         })
             .then(response => {
                 console.log(response.data)
             })
     }
-
 
     const printData = () => {
         const result = (output._physicalSignals || [])
@@ -170,6 +259,23 @@ export default function FileUpload() {
 
           console.log(result); // log result
         download(result, `result-${getIsoDate()}.csv`) // save to a file
+    }
+
+    function countDaysOfUsage(signal){
+        let days = 0
+
+        for(let i=0; i<signal.length; i++){
+
+            let signalValue = parseFloat(signal[i])
+
+            if(signalValue < 0) {
+                days = days + 1
+            }
+        }
+
+        console.log("days " + days)
+
+        return days
     }
 
     function calculateAverage (signal) {
@@ -192,33 +298,12 @@ export default function FileUpload() {
                 countPositive = countPositive + 1;
                 signalCum = signalCum + signalValue;
             }
+
         }
 
         const signalAverage = signalCum/countPositive;
 
         return Number((signalAverage).toFixed(1));
-    }
-
-    const showAll = () => {
-        (output._physicalSignals || []).map((value, index) => {
-
-            const {label} = output._header.signalInfo[index]
-
-            const dataString = output._physicalSignals[index]
-
-            return (<>
-                <div key={value.id}>
-                    <b>{label}</b>
-                    <pre>{
-                        value.slice(0, 5).join(',')
-                    }...</pre>
-                    <pre>{
-                        dataString.slice(0, 10).join( ' ')
-                    }...</pre>
-                </div>
-
-            </>)
-        })
     }
 
     return (
@@ -227,9 +312,10 @@ export default function FileUpload() {
             <input type='file' onChange={uploadFile} />
             <p>   </p>
             <div>
-
-                <button onClick={printData}> Save all data </button>
-                <button onClick={saveCPAPdata} > Save CPAP key data </button>
+                { showCSVSave && (
+                    <button onClick={printData}> {t('saveCSV_ALL')} </button>
+                )}
+                <button onClick={saveCPAPdata} > {t('saveSCV_MINE')} </button>
                 <button onClick={postKeyData} > {t('saveMyData')}  </button>
 
 
