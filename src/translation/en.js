@@ -24,7 +24,18 @@ export const TranslationEN = {
     passwordEnter : "your password",
     nodata : "No data uploaded yet",
     saveCSV_ALL : "Save all data from your file ",
-    saveSCV_MINE : "Save my data in .csv"
+    saveSCV_MINE : "Save my data in .csv",
+    userGuideChoice : "You are ",
+    patient : " a patient",
+    doctor : " a health care professional",
+    userGuideDoctors : "How to use this application for doctors",
+    introduction : "To use this application you need to be registered as a patient or a doctor",
+    questionD1 : "Where can I see my patients list ? ",
+    answerD1 : "The list of your patients with all necessary data is created automatically and you can consult it on the page 'My patients' ",
+    questionD2 : " How can I save all data from EDF file ?",
+    answerD2 : "Please upload your EDF file on the page 'Upload EDF file and then click the button 'Save all data '. The data will be saved in CSV format on your computer",
+    userGuidePatients : "How to use this applications for patients",
+
 
 
 

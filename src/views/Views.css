@@ -12,8 +12,9 @@
 .nav-link{
 
     flex-direction: row;
-    justify-content: right;
+    justify-content: center;
     margin-right: 50px;
+    color : darkgreen;
 
 }
 
@@ -57,4 +58,20 @@
     text-transform: uppercase;
     color: white;
     margin-top: 15px;
+}
+
+.faq-page {
+    text-align: center;
+}
+
+.choice-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.title{
+    color : green;
 }

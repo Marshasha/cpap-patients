@@ -25,5 +25,16 @@ export const TranslationFR = {
     passwordEnter : "et votre mot de pass",
     nodata : "Il n'y a pas des données",
     saveCSV_ALL : "Enregistrer tous les données  ",
-    saveSCV_MINE : " Enregistrer mes données en .csv"
+    saveSCV_MINE : " Enregistrer mes données en .csv",
+    userGuideChoice : "Vous êtes",
+    patient : " un patient",
+    doctor : " un professionnel de santé",
+    userGuideDoctors : "Comment utiliser cette application ?",
+    introduction : "Pour utiliser cette application vous devez être enregistré comme un patient ou un prodessionnel de santé",
+    questionD1 : "Òu puis-je voir le liste de mes patients ? ",
+    answerD1 : "Le liste de vos patients avec toutes les données est créé automatiquement et vous pouvez le consulter à la page 'Mes patients' ",
+    questionD2 : " Comment puis-je sauvgarder toutes les données de SD carte ?",
+    answerD2 : "Charger votre fichier .EDF à la page 'Ajouter le fichier EDF' et clicker le button 'Enregistrer tous les données '. Les données serons sauvgardées dans le format CSV sur votre ordinateur",
+    userGuidePatients : "Comment puis-je utiliser cette application ?",
+
 }

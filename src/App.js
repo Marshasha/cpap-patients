@@ -12,6 +12,9 @@ import Profile from "./views/Profile";
 import Home from "./views/Home";
 import UsageTime from "./views/UsageTime";
 import DoctorsBoard from "./views/DoctorsBoard";
+import UserGuide from "./views/UserGuide";
+import DoctorsGuide from "./components/DoctorsGuide";
+import PatientsGuide from "./components/PatientsGuide";
 
 function App() {
   return (
@@ -25,6 +28,9 @@ function App() {
                 <Route exact path='/profile' element={<Profile />} />
                 <Route path='/usageTime' element={<UsageTime/>} />
                 <Route path='/doctorsBoard' element={<DoctorsBoard/>}/>
+                <Route path='/info' element={<UserGuide/>}/>
+                <Route path='/infoDoctor' element={<DoctorsGuide/>}/>
+                <Route path='/infoPatient' element={<PatientsGuide/>}/>
             </Route>
         </Routes>
     </BrowserRouter>
