@@ -35,7 +35,7 @@ export const login = (email, password) => dispatch => {
                 type: LOGIN_SUCCESS,
                 payload: { user: data },
             })
-            console.log("User role " + JSON.stringify(data.role) )
+
             return Promise.resolve()
         },
         error => {
