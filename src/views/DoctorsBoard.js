@@ -4,19 +4,18 @@ import {useTranslation} from "react-i18next";
 import axios from "axios";
 import Table from "react-bootstrap/Table";
 import {useSelector} from "react-redux";
+import {LABELS_LIST} from "../constants/constants";
 
 
 
 export default function DoctorsBoard(){
-
-    const labelList = ['date', 'daysOfUsage','duration', 'maxpress', 'minpress', 'tgtipap95', 'tgtepapmax', 'leakmax', 'ahi','cai', 'uai'  ]
 
     const [measureslist, setMeasuresList ] = useState([])
     const [patients, setPatients] = useState([])
     const [list, setList] = useState([])
     const { user: currentUser } = useSelector(state => state.auth)
 
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(()=>{
 
@@ -89,7 +88,7 @@ export default function DoctorsBoard(){
                 <tbody>
                 <tr>
                     <th>Name</th>
-                    {Array.from(labelList).map((label,index)=>(
+                    {Array.from(LABELS_LIST).map((label,index)=>(
                         <th key={index}>{t(label)}</th>
                     ))}
                 </tr>
@@ -107,6 +106,7 @@ export default function DoctorsBoard(){
                         <td>{measure.ahi}</td>
                         <td>{measure.cai}</td>
                         <td>{measure.uai}</td>
+                        <td style={parseInt(measure.mark) > 70 ? { color : 'green'}:{color: 'red'}}>{measure.mark}</td>
                     </tr>
                 ))}
                 </tbody>

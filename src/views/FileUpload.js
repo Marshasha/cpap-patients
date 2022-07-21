@@ -1,14 +1,20 @@
-import React, {useEffect, useState} from 'react';
-import MeasureList from "../components/Measure";
-import {useParams} from "react-router";
+import React, { useEffect, useState} from 'react';
 import { useTranslation } from 'react-i18next';
-import TitlesList from "../components/TitlesList";
 import axios from "axios";
 import {useDispatch, useSelector} from "react-redux";
 import * as Duration from "luxon";
 import {history} from "../helpers/history";
 import {clearMessage} from "../actions/message";
-import { LABELS_LIST } from "../constants/constants";
+import Measures from "../components/Measures";
+import Button from "react-bootstrap/Button";
+import Slider from "@mui/material/Slider";
+import { styled } from '@mui/material/styles';
+import "./Views.css";
+import Box from "@mui/material/Box";
+import Grid from "@mui/material/Grid";
+import MuiInput from '@mui/material/Input';
+
+
 
 const { DateTime } = require("luxon");
 const edfdecoder = require('edfdecoder');
@@ -51,18 +57,22 @@ export default function FileUpload() {
     const [header, setHeader] = useState('')
     const [measure, setMeasure] = useState('')
     const [measures, setMeasures] = useState([''])
-    const [labelList, setLabelList] = useState(LABELS_LIST)
-    const { t, i18n } = useTranslation();
+    const { t } = useTranslation();
     const [userId, setUserId] = useState('01')
     const [showCSVSave, setShowCSVSave] = useState(false);
     const [file, setFile] = useState('')
+    const Input = styled(MuiInput)`
+  width: 42px;
+`;
+    const [value, setValue] = useState(10);
+
     const dispatch = useDispatch();
 
     const { user: currentUser } = useSelector(state => state.auth)
-    let [channels, setChannels] = useState([t('nodata')])
+    let [channels, setChannels] = useState([0, 0, 0, 0, t('nodata'), 0, 0, 0, 0, 0, 0, value])
 
     const labelsList = ['days','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
-    const {id} = useParams();
+
 
     useEffect(() => {
         history.listen(() => {
@@ -170,7 +180,7 @@ export default function FileUpload() {
             setMeasure(signal)
 
 
-            result = result + labelString + ' , ' + signal + '\n'
+            result = result + labelString + ',' + signal + '\n'
 
             /**
              * Setup of days of usage and average usage
@@ -192,6 +202,11 @@ export default function FileUpload() {
                 let dur = Duration.Duration.fromObject( {minutes : average})
                 average = dur.toFormat('hh:mm').toString()
 
+                let separator = ','
+                let transposedCSV = lib.transpose(result, separator)
+
+                setFile(transposedCSV)
+
             }else{
                 average = calculateAverage(signal)
             }
@@ -203,20 +218,21 @@ export default function FileUpload() {
 
         setChannels(table)
 
-        let separator = ','
+   /*     let separator = ','
         let transposedCSV = lib.transpose(result, separator)
 
-        setFile(transposedCSV)
+        setFile(transposedCSV) */
+
      //   postCPAPdata()
 
-     //   const fileName = userId // to replace with loggedIn user
 
-     //   download(transposedCSV, `${fileName}-${getIsoDate()}.csv`) // save to a file
     }
 
     const saveCPAPdata = () => {
 
-        const fileName = userId // to replace with loggedIn user
+        const fileName = userId
+
+        postCPAPdata()
 
         download(file, `${fileName}-${getIsoDate()}.csv`) // save to a file
     }
@@ -243,6 +259,7 @@ export default function FileUpload() {
             ahi : channels[8],
             cai : channels[9],
             uai : channels[10],
+            mark : value,
         })
             .then(response => {
                 console.log(response.data)
@@ -306,24 +323,125 @@ export default function FileUpload() {
         return Number((signalAverage).toFixed(1));
     }
 
+    const PrettoSlider = styled(Slider)({
+        color: '#52af77',
+        height: 8,
+        '& .MuiSlider-track': {
+            border: 'none',
+        },
+        '& .MuiSlider-thumb': {
+            height: 24,
+            width: 24,
+            backgroundColor: '#fff',
+            border: '2px solid currentColor',
+            '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
+                boxShadow: 'inherit',
+            },
+            '&:before': {
+                display: 'none',
+            },
+        },
+        '& .MuiSlider-valueLabel': {
+            lineHeight: 1.2,
+            fontSize: 12,
+            background: 'unset',
+            padding: 0,
+            width: 32,
+            height: 32,
+            borderRadius: '50% 50% 50% 0',
+            backgroundColor: '#52af77',
+            transformOrigin: 'bottom left',
+            transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
+            '&:before': { display: 'none' },
+            '&.MuiSlider-valueLabelOpen': {
+                transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
+            },
+            '& > *': {
+                transform: 'rotate(45deg)',
+            },
+        },
+    });
+
+
+    const handleSliderChange = (event, newValue) => {
+            setValue(newValue);
+            channels[11] = newValue
+
+    };
+
+    const handleInputChange = (event) => {
+        console.log("Value " + value)
+            setValue(event.target.value === '' ? '' : Number(event.target.value));
+    };
+
+    const handleBlur = () => {
+            if (value < 0) {
+                setValue(0);
+            } else if (value > 100) {
+                setValue(100);
+            }
+    };
+
+
     return (
         <div className="App">
-            <h2> {t('chooseFile')} </h2>
-            <input type='file' onChange={uploadFile} />
-            <p>   </p>
+            <p className="steps">
+                {t('step1')}
+                <label className="mx-3"> {t('chooseFile')} </label>
+            </p>
+
+            <input type='file' onChange={uploadFile} className="btn btn-outline-success"/>
+            <p className="steps">
+                {t('step2')}
+                <label className="mx-3"> {t('evaluateTherapy')} </label>
+            </p>
+            <div className="buttons">
+
+                <Box sx={{ width : 300}} className="slider">
+                    <Grid item xs>
+                        <Slider
+                            value={typeof value === 'number' ? value : 0}
+                            onChange={handleSliderChange}
+                            aria-labelledby="input-slider"
+                            style={{color : '#52af77', height: 8,}}
+                        />
+                    </Grid>
+                    <Grid item>
+                        <Input
+                            value={value}
+                            size="small"
+                            onChange={handleInputChange}
+                            onBlur={handleBlur}
+                            inputProps={{
+                                step: 10,
+                                min: 0,
+                                max: 100,
+                                type: 'number',
+                                'aria-labelledby': "linear-slider",
+                            }}
+                        />
+                    </Grid>
+                </Box>
+            </div>
+
             <div>
+                <label className="label"> {t('myData')} </label>
+
+                <Measures data={channels} />
+            </div>
+
+            <p className="steps"> {t('step3')} </p>
+            <div className="buttons">
                 { showCSVSave && (
-                    <button onClick={printData}> {t('saveCSV_ALL')} </button>
+                    <Button onClick={printData} variant="outline-success"  className="button"> {t('saveCSV_ALL')} </Button>
                 )}
-                <button onClick={saveCPAPdata} > {t('saveSCV_MINE')} </button>
-                <button onClick={postKeyData} > {t('saveMyData')}  </button>
+                <Button onClick={saveCPAPdata} variant="outline-success" className="button"> {t('saveSCV_MINE')} </Button>
+                <Button onClick={postKeyData}  variant="outline-success" className="button" > {t('saveMyData')}  </Button>
 
-
-                <h2> {t('myData')} </h2>
-                <TitlesList labels={labelList}/>
-                <MeasureList data={channels}/>
 
             </div>
+
+
         </div>
     )
 }

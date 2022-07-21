@@ -1,9 +1,12 @@
 import React from 'react'
 import { Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
+import "./Views.css"
+import {useTranslation} from "react-i18next";
 
 export default function Profile() {
     const { user: currentUser } = useSelector(state => state.auth)
+    const { t } = useTranslation();
 
     if (!currentUser) {
         return <Navigate to='/login' />
@@ -12,18 +15,15 @@ export default function Profile() {
     return (
         <div className='container'>
             <header className='jumbotron'>
-                <h3>
-                    <strong>{currentUser.user.username}</strong> Profile
-                </h3>
+                <label className="mx-3">
+                    <strong>{currentUser.user.username}</strong>{t('hello')}
+                </label>
             </header>
-            <p>
-                <strong>Token:</strong> {currentUser.token.substring(0, 20)} ...{' '}
-                {currentUser.token.substr(currentUser.token.length - 20)}
-            </p>
-            <p>
+
+            <p className="steps">
                 <strong>Id:</strong> {currentUser.user._id}
             </p>
-            <p>
+            <p className="steps">
                 <strong>Email:</strong> {currentUser.user.email}
             </p>
             <strong>Authorities:</strong>

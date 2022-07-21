@@ -1,6 +1,8 @@
 import * as d3 from 'd3';
 //import usagetime from "../data/OnDuration.csv";
-import usagetime from "../data/62ce8d0d6f99d1493af52d9e-2022-07-18T10 16 11.622Z.csv";
+//import usagetime from "../data/62ce8d0d6f99d1493af52d9e-2022-07-18T10 16 11.622Z.csv";
+import usagetime from "../data/62ceee38ba5772c8f771a526-2022-07-21T08 46 57.848Z.csv";
+import {useTranslation} from "react-i18next";
 
 const MARGIN = { TOP : 10, BOTTOM : 50, LEFT : 70, RIGHT : 10}
 const WIDTH = 1000 -MARGIN.LEFT -MARGIN.RIGHT;
@@ -8,6 +10,7 @@ const HEIGHT = 600 - MARGIN.TOP - MARGIN.BOTTOM;
 
 
 export default class D3Chart {
+
     constructor(element){
         const svg = d3.select(element)
             .append("svg")
@@ -20,26 +23,24 @@ export default class D3Chart {
 
             const max = d3.max(figures, d => {
 
-                if(+d.time<0){
 
-                    d.time=0;
+                if(+d.duration<0){
+
+                    d.duration=0;
                 }
-                console.log(d.time)
-                return +d.time/60
+
+                return +d.duration/60
             })
 
-            const day = figures.map(d => {
-                return d.date%1000
-            })
 
             const y = d3.scaleLinear()
                 .domain([0, max])
                 .range([HEIGHT, 0])
-         //   console.log(figures)
+
 
             const x = d3.scaleBand()
                 .domain(figures.map(d => {
-                    return d.time
+                    return d.duration
                 }))
                 .range([0, WIDTH])
                 .padding(0.4)
@@ -48,6 +49,8 @@ export default class D3Chart {
             svg.append("g")
                 .attr("transform", `translate(0, ${HEIGHT})`)
                 .call(xAxisName)
+
+
 
             const yAxisName = d3.axisLeft(y)
             svg.append("g").call(yAxisName)
@@ -70,14 +73,14 @@ export default class D3Chart {
 
             rects.enter()
                 .append("rect")
-                .attr("x", d => x(d.time))
-                .attr("y", d => y(d.time/60))
+                .attr("x", d => x(d.duration))
+                .attr("y", d => y(d.duration/60))
                 .attr("width", x.bandwidth)
-                .attr("height",d => HEIGHT - y(d.time/60))
+                .attr("height",d => HEIGHT - y(d.duration/60))
                 .attr("fill", d => {
-                    if(d.time/60<4){
+                    if(d.duration/60<4){
                         return "red"
-                    }else if(d.time/60 <5 ){
+                    }else if(d.duration/60 <5 ){
                         return "orange"
                     }else{
                         return "green"
