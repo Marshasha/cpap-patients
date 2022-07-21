@@ -3,7 +3,7 @@ import {useTranslation} from "react-i18next";
 import "./Components.css"
 
 export default function DoctorsGuide (){
-    const { t, i18n } = useTranslation()
+    const { t } = useTranslation()
 
     return (
         <div className="questions-list">

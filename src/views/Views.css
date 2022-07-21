@@ -9,6 +9,10 @@
     width: 200px;
 }
 
+.nav-item{
+    margin-left: 10px;
+}
+
 .nav-link{
 
     flex-direction: row;
@@ -16,6 +20,18 @@
     margin-right: 50px;
     color : darkgreen;
 
+}
+
+.label{
+    color : darkgreen;
+    -ms-text-size-adjust: auto;
+    font-weight: bolder;
+    font-size: medium;
+}
+
+.slider{
+    display: flex;
+    align-items: center;
 }
 
 .login-title{
@@ -72,6 +88,32 @@
 
 }
 
+.warning{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color : red;
+}
+
+.button{
+    margin-right: 10px;
+}
+
+.steps{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
 .title{
     color : green;
 }
+
+.buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+

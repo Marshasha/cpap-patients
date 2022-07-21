@@ -4,6 +4,7 @@ import './Views.css';
 import React from "react";
 import {useDispatch, useSelector} from "react-redux";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Button from 'react-bootstrap/Button';
 import { useTranslation } from 'react-i18next';
 import '../services/i18n'
 
@@ -55,13 +56,13 @@ function Navigation(){
         <Fragment>
             <div className='navigation'>
                 <nav className='navbar navbar-expand navbar-nav bg-transparent'>
-                    <div className='navbar-nav mr-auto'>
+                    <div className='navbar-nav ml-auto'>
 
                             <li className="nav-item">
                                 {Object.keys(lngs).map((lng) => (
-                                    <button key={lng} style={{ fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal' }} type="submit" onClick={() => i18n.changeLanguage(lng)}>
+                                    <Button key={lng} variant="outline-success" size="sm" style={{  fontWeight: i18n.resolvedLanguage === lng ? 'bold' : 'normal' }} type="submit" onClick={() => i18n.changeLanguage(lng)}>
                                         {lngs[lng].nativeName}
-                                    </button>
+                                    </Button>
                                 ))}
                             </li>
                             <li className='nav-item'>

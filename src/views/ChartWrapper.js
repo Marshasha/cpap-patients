@@ -1,4 +1,4 @@
-import React, {Component, useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState} from 'react';
 import D3Chart from './D3Chart';
 
 const ChartWrapper = ({data}) => {

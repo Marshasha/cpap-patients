@@ -1,20 +1,27 @@
 import React from 'react';
 import ChartWrapper from './ChartWrapper';
 import Container from 'react-bootstrap/Container';
+import "./Views.css"
+import {useTranslation} from "react-i18next";
 
 
-class UsageTime extends React.Component {
+function UsageTime ()  {
+
+    const { t } = useTranslation();
 
 
-
-    render(){
-        return <div className="Charts">
+        return (
+            <div className="Charts">
+            <div className="warning">
+                <p className="warning">{t('warning')}</p>
+            </div>
             <Container>
                 <ChartWrapper/>
             </Container>
 
         </div>
-    }
+        )
+
 
 
 }

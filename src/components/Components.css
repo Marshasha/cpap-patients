@@ -18,8 +18,15 @@
     width : auto;
 }
 
+.table-responsive{
+   color : green;
+    font-style: normal;
+    font-weight : normal;
+}
+
 .title{
     color : green;
+    font-weight: bold;
 }
 
 .questions-list{

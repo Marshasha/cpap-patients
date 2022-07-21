@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {useTranslation} from "react-i18next";
 import {Link} from "react-router-dom";
 import './Views.css'
 
 export default function UserGuide () {
 
-    const { t, i18n } = useTranslation()
+    const { t } = useTranslation()
 
 
     return (
