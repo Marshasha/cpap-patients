@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_URL = 'http://localhost:3090/api/auth/'
+//const API_URL = 'http://cpap-auth.jcloud.ik-server.com/api/auth/'
 
 const register = (username, email, password) => {
     return axios.post(API_URL + 'register', {
@@ -11,7 +12,7 @@ const register = (username, email, password) => {
 }
 
 const login = (email, password) => {
-    console.log("Attempt to logIn " + email + " password " + password)
+
     return axios
         .post(API_URL + 'signin', {
             email,
@@ -19,7 +20,7 @@ const login = (email, password) => {
         })
         .then(response => {
             if (response.data.token) {
-                console.log("Token is given " + response.data.token)
+
                 localStorage.setItem('user', JSON.stringify(response.data))
             }
             console.log("Response data " + JSON.stringify(response.data))

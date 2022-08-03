@@ -71,7 +71,7 @@ export default function FileUpload() {
     const { user: currentUser } = useSelector(state => state.auth)
     let [channels, setChannels] = useState([0, 0, 0, 0, t('nodata'), 0, 0, 0, 0, 0, 0, value])
 
-    const labelsList = ['days','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi','cai', 'uai'  ]
+    const labelsList = ['days','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi', 'oai','cai', 'uai'  ]
 
 
     useEffect(() => {
@@ -145,7 +145,6 @@ export default function FileUpload() {
 
         let date = DateTime.fromFormat(startingDate, format)
         let dateString = date.toString().slice(0,10)
-        console.log("DateString " + dateString)
 
         const signal = output._physicalSignals[0]
 
@@ -172,6 +171,8 @@ export default function FileUpload() {
 
             const  { label } = output._header.signalInfo[channelNumber]
 
+
+
             const signal = output._physicalSignals[channelNumber]
 
             let labelString = label.replace(/\./g,'').toLowerCase()
@@ -187,45 +188,119 @@ export default function FileUpload() {
              * the signal of Duration, if it's negative => it was not used, if it's positive we calculate the average usage time
              */
 
+            switch (i) {
+                case 1 :
+
+                    /**
+                     * Count the percentage of days when CPAP was used
+                     * @type {Ratio of Usage}
+                     */
+
+                    let daysNoUsage = countDaysOfNonUsage(signal)
+                    let daysTotal = parseInt(signal.length )
+                    console.log("Days of NON usage " + daysNoUsage + " total days  " + daysTotal)
+
+                    let days = daysTotal-daysNoUsage
+                    let ratioOfUsage = Number(days / daysTotal * 100).toFixed(1)
+                    let ratioOfUsageString = ratioOfUsage + ' % '
+                    console.log("ratioOfUsageString " + ratioOfUsageString)
+                    let daysOfUsage = countDaysOfUsage(signal)
+                    table.push(daysOfUsage)
+
+                    /**
+                     * Count total hours for ResMed algorithm : total hours / total days
+                     * @type {number}
+                     */
+                    let totalHours = countTotalHoursOfUsage(signal)
+                    console.log("Total hours " + totalHours)
+
+                    let totalDur = Duration.Duration.fromObject({minutes : totalHours})
+                    let totalHourDuration = totalDur.toFormat('hh:mm').toString()
+                    console.log("Total hours " + totalHourDuration)
+
+                    /**
+                     * Count Average Usage time based on the average result of an array
+                     * @type {Average Usage Time}
+                     */
+
+                    average = calculateAverage(signal)
+                    let dur = Duration.Duration.fromObject( {minutes : average})
+                    average = dur.toFormat('hh:mm').toString()
+                //    table.push(average)
+
+                    /**
+                     * Count the Usage time based on the median result of an array
+                     */
+
+                    let usageTimeMedian = median(signal)
+                    let durMedian = Duration.Duration.fromObject( {minutes : usageTimeMedian})
+                    usageTimeMedian = durMedian.toFormat('hh:mm').toString()
+                    table.push(usageTimeMedian)
+
+                    console.log("Median average time  ", usageTimeMedian)
+
+                    console.log("Label " + label + " channel number " + channelNumber + " i " + i + " average " + average)
 
 
-            if(i===1){ // the label Duration == 1
-                average = calculateAverage(signal)
-                let days = countDaysOfUsage(signal)
+                    break;
+                case 2 :
+                case 3 :
+                case 4 :
+                case 5 :
+                    console.log("Case 3, 4, 5 ")
+                    average = median(signal)
+                    table.push(average)
+                    console.log("Label " + label + " channel number " + channelNumber + " i " + i + " average " + average)
+                    break;
 
-                console.log("Days of usage " + days + " signal length " + signal.length)
-                let ratioOfUsage = Number(days / parseInt(signal.length ) * 100).toFixed(1)
-                let ratioOfUsageString = ratioOfUsage + ' % '
-                console.log("ratioOfUsageString " + ratioOfUsageString)
-                table.push(ratioOfUsageString)
+                case 6 :
+                    console.log("Case 6 ")
+                    average = median(signal)
+                    average = (average*60).toFixed(2) // To get the measurement of Leaks per minute
+                    table.push(average)
+                    console.log("Label " + label + " channel number " + channelNumber + " i " + i + " average " + average)
+                    break;
+                case 7 :
+                case 8 :
+                case 9 :
+                case 10:
+                    console.log("Case 7, 8, 9, 10 ")
+                    average = median(signal)
+                    table.push(average)
+                    console.log("Label " + label + " channel number " + channelNumber + " i " + i + " average " + average)
+                    break;
 
-                let dur = Duration.Duration.fromObject( {minutes : average})
-                average = dur.toFormat('hh:mm').toString()
+                }
 
-                let separator = ','
-                let transposedCSV = lib.transpose(result, separator)
-
-                setFile(transposedCSV)
-
-            }else{
-                average = calculateAverage(signal)
-            }
-
-            table.push(average)
         }
 
         setMeasures(result)
 
         setChannels(table)
+        console.log("table " + table)
 
-   /*     let separator = ','
+        let separator = ','
         let transposedCSV = lib.transpose(result, separator)
 
-        setFile(transposedCSV) */
-
-     //   postCPAPdata()
+        setFile(transposedCSV)
 
 
+    }
+
+    function countTotalHoursOfUsage(signal){
+        let hours = 0
+
+        for(let i=0; i<signal.length; i++){
+
+            let hoursPerDay = parseInt(signal[i])
+
+            if(hoursPerDay >= 0){
+                hours = hours + hoursPerDay
+            }
+
+        }
+
+        return hours
     }
 
     const saveCPAPdata = () => {
@@ -240,7 +315,12 @@ export default function FileUpload() {
     const postCPAPdata = () => {
         console.log("File is cteated " + file.length)
 
-        axios.post('/api3/upload-csv-file', file)
+        axios.post('/api3/upload-csv-file', {
+            file
+        }).
+            then(response => {
+                console.log(response.data)
+        })
 
     }
 
@@ -257,8 +337,9 @@ export default function FileUpload() {
             pressureMax : channels[6],
             leakMax : channels[7],
             ahi : channels[8],
-            cai : channels[9],
-            uai : channels[10],
+            oai : channels[9],
+            cai : channels[10],
+            uai : channels[11],
             mark : value,
         })
             .then(response => {
@@ -278,7 +359,7 @@ export default function FileUpload() {
         download(result, `result-${getIsoDate()}.csv`) // save to a file
     }
 
-    function countDaysOfUsage(signal){
+    function countDaysOfNonUsage(signal){
         let days = 0
 
         for(let i=0; i<signal.length; i++){
@@ -286,8 +367,35 @@ export default function FileUpload() {
             let signalValue = parseFloat(signal[i])
 
             if(signalValue < 0) {
+
                 days = days + 1
             }
+
+        }
+
+        console.log("days " + days)
+
+        return days
+    }
+
+    function countDaysOfUsage(signal){
+        let days = 0
+        let usageActive = true
+
+        for(let i=0; i<signal.length; i++){
+
+            let signalValue = parseFloat(signal[i])
+
+            if(signalValue < 0) {
+                usageActive = false
+            }else{
+                usageActive = true
+            }
+
+            if(usageActive){
+                days = days + 1
+            }
+
         }
 
         console.log("days " + days)
@@ -307,65 +415,46 @@ export default function FileUpload() {
             let signalValue = parseFloat(signal[i])
 
             if(signalValue < 0) {
-
-            //    signalCum = signalCum;
                 countNegative = countNegative +1;
-
             }else{
                 countPositive = countPositive + 1;
                 signalCum = signalCum + signalValue;
             }
-
         }
 
         const signalAverage = signalCum/countPositive;
 
-        return Number((signalAverage).toFixed(1));
+        return Number((signalAverage).toFixed(2));
     }
 
-    const PrettoSlider = styled(Slider)({
-        color: '#52af77',
-        height: 8,
-        '& .MuiSlider-track': {
-            border: 'none',
-        },
-        '& .MuiSlider-thumb': {
-            height: 24,
-            width: 24,
-            backgroundColor: '#fff',
-            border: '2px solid currentColor',
-            '&:focus, &:hover, &.Mui-active, &.Mui-focusVisible': {
-                boxShadow: 'inherit',
-            },
-            '&:before': {
-                display: 'none',
-            },
-        },
-        '& .MuiSlider-valueLabel': {
-            lineHeight: 1.2,
-            fontSize: 12,
-            background: 'unset',
-            padding: 0,
-            width: 32,
-            height: 32,
-            borderRadius: '50% 50% 50% 0',
-            backgroundColor: '#52af77',
-            transformOrigin: 'bottom left',
-            transform: 'translate(50%, -100%) rotate(-45deg) scale(0)',
-            '&:before': { display: 'none' },
-            '&.MuiSlider-valueLabelOpen': {
-                transform: 'translate(50%, -100%) rotate(-45deg) scale(1)',
-            },
-            '& > *': {
-                transform: 'rotate(45deg)',
-            },
-        },
-    });
+    function median(signal){
+
+        // get first element of each float array
+        signal = signal.map(s => s[0]);
+
+        signal = signal.filter(x => x >= 0);
+
+        let mid = Math.floor(signal.length/2)
+
+        let numbers = [...signal].sort((a,b) => a - b);
+        console.log("Numbers " + numbers.slice(0, 5))
+
+        let result = signal.length%2 !== 0 ? numbers[mid] : (numbers[mid-1] + numbers[mid]) / 2
+        //result = Number(result).toFixed(2)
+
+        if(isNaN(result)){
+            console.log("this is not a number", result);
+            result = -1
+        }
+        console.log("Result " + result)
+
+        return result.toFixed(2);
+    }
 
 
     const handleSliderChange = (event, newValue) => {
             setValue(newValue);
-            channels[11] = newValue
+            channels[12] = newValue
 
     };
 

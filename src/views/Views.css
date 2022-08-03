@@ -105,8 +105,19 @@
     font-weight: normal;
 }
 
-.title{
+.table-responsive{
     color : green;
+    font-style: normal;
+    font-weight : normal;
+}
+
+.title{
+
+    display: flex;
+    align-items: center;
+    color : green;
+    font-weight: normal;
+    justify-content: center;
 }
 
 .buttons{

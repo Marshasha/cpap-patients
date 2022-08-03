@@ -5,6 +5,7 @@ module.exports = function(app) {
         '/api',
         createProxyMiddleware({
             target : 'http://localhost:3090',
+         //   target : 'http://cpap-auth.jcloud.ik-server.com/',   // production?
             changeOrigin : true,
         })
     );
@@ -12,6 +13,7 @@ module.exports = function(app) {
         '/api2',
         createProxyMiddleware({
             target : 'http://localhost:8181',
+         //   target : 'http://cpap-backend.jcloud.ik-server.com', // production?
             changeOrigin : true,
         })
     );

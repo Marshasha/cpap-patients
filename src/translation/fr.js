@@ -18,13 +18,14 @@ export const TranslationFR = {
     name :  "Nom",
     date : "Date",
     daysOfUsage : "Jours de l'utilisation",
-    duration : "L'utilisation moyenne",
+    duration : "L'utilisation médiane",
     maxpress : "Pression maximal",
     minpress : "Pression minimal",
     tgtipap95 : "Pression 95%",
     tgtepapmax : "Maximal pression",
     leakmax : "Fuits maximal",
     ahi : "AHI",
+    oai : "OAI",
     cai : "CAI",
     uai : "UAI",
     mark : "Satisfé avec la thérapie",
@@ -49,5 +50,7 @@ export const TranslationFR = {
     questionD2 : " Comment puis-je sauvgarder toutes les données de SD carte ?",
     answerD2 : "Charger votre fichier .EDF à la page 'Ajouter le fichier EDF' et clicker le button 'Enregistrer tous les données '. Les données serons sauvgardées dans le format CSV sur votre ordinateur",
     userGuidePatients : "Comment puis-je utiliser cette application ?",
+    questionP1 : "Comment j'ajoute mes données ?",
+    answerP1 : "Insérez votre SD carte dans le lecteur sur votre ordinateur et selectionnez le fichier STR.edf",
 
 }
