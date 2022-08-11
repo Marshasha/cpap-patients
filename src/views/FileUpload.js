@@ -71,8 +71,8 @@ export default function FileUpload() {
     const { user: currentUser } = useSelector(state => state.auth)
     let [channels, setChannels] = useState([0, 0, 0, 0, t('nodata'), 0, 0, 0, 0, 0, 0, value])
 
-    const labelsList = ['days','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtepap.max', 'leak.max', 'ahi', 'oai','cai', 'uai'  ]
-
+    const labelsList10 = ['days','duration', 'maxpress', 'minpress', 'tgtipap.95', 'tgtipap.max', 'leak.max', 'ahi', 'oai','cai', 'uai'  ]
+    const labelsList9 = ['dur', 'pression max', 'pression min', 'therapy press 95', 'therapy press ma', 'leak.max', 'ahi', 'oai','cai', 'uai'  ]
 
     useEffect(() => {
         history.listen(() => {
@@ -88,9 +88,12 @@ export default function FileUpload() {
         }
 
     }, [output])
+
+
     useEffect(()=>{
 
     },[measures])
+
     useEffect(()=>{
 
     },[channels])
@@ -98,12 +101,14 @@ export default function FileUpload() {
     useEffect(()=>{
 
     }, [header])
+
     useEffect(()=>{
         if(currentUser){
             setUserId(currentUser.user._id)
             setShowCSVSave(currentUser.user.role.includes('ROLE_DOCTOR'))
         }
     }, [userId, currentUser])
+
 
     useEffect(()=>{
         console.log("File " + file.length)
@@ -129,11 +134,53 @@ export default function FileUpload() {
 
     }
 
+    const nbrOfSignals =() => {
+        let numberOfSignals = output._header.nbSignals
+
+        return numberOfSignals
+    }
+
+    const dateSetting = () => {
+        /**
+         * Date settings
+         */
+
+        let result = ' '
+
+        let startingDateString = output._header.localRecordingId
+        let startingDate = startingDateString.slice(10,21)
+        const format = "dd-LLL-yyyy"
+
+        let date = DateTime.fromFormat(startingDate, format)
+        let dateString = date.toString().slice(0,10)
+        console.log("Date Start ", dateString)
+
+
+        const signal = output._physicalSignals[0]
+
+        for(let i=0; i<signal.length; i++){
+            signal[i] = dateString
+            date = date.plus({days : 1})
+            dateString = date.toString().slice(0,10)
+        }
+
+        result = 'date' + ' , ' + signal + '\n'
+
+        date = date.minus({days : 1}).toString().slice(0,10)
+        console.log("Date End ", date)
+
+
+        return result
+    }
+
     const showCPAPdata = () => {
 
         let result = ''
         let table = []
         let average = ''
+
+        let check = nbrOfSignals()
+        console.log(" Check " , check)
 
         /**
          * Date settings
@@ -146,7 +193,7 @@ export default function FileUpload() {
         let date = DateTime.fromFormat(startingDate, format)
         let dateString = date.toString().slice(0,10)
 
-        const signal = output._physicalSignals[0]
+        const signal = output._physicalSignals[0]  // to adapt for AirSense9
 
         for(let i=0; i<signal.length; i++){
             signal[i] = dateString
@@ -163,15 +210,13 @@ export default function FileUpload() {
          *
          */
 
-        for(let i=1; i<labelsList.length; i++){
+        for(let i=1; i<labelsList10.length; i++){
 
             const channelNumber = output._header.signalInfo.findIndex(
-                ({label}) => label.toLowerCase().indexOf(labelsList[i]) > -1
+                ({label}) => label.toLowerCase().indexOf(labelsList10[i]) > -1
             )
 
             const  { label } = output._header.signalInfo[channelNumber]
-
-
 
             const signal = output._physicalSignals[channelNumber]
 
@@ -198,12 +243,11 @@ export default function FileUpload() {
 
                     let daysNoUsage = countDaysOfNonUsage(signal)
                     let daysTotal = parseInt(signal.length )
-                    console.log("Days of NON usage " + daysNoUsage + " total days  " + daysTotal)
 
                     let days = daysTotal-daysNoUsage
                     let ratioOfUsage = Number(days / daysTotal * 100).toFixed(1)
                     let ratioOfUsageString = ratioOfUsage + ' % '
-                    console.log("ratioOfUsageString " + ratioOfUsageString)
+
                     let daysOfUsage = countDaysOfUsage(signal)
                     table.push(daysOfUsage)
 
@@ -395,11 +439,7 @@ export default function FileUpload() {
             if(usageActive){
                 days = days + 1
             }
-
         }
-
-        console.log("days " + days)
-
         return days
     }
 
@@ -432,25 +472,21 @@ export default function FileUpload() {
         // get first element of each float array
         signal = signal.map(s => s[0]);
 
+        // Sort out negative values
         signal = signal.filter(x => x >= 0);
 
+        // calculate the median of an array
         let mid = Math.floor(signal.length/2)
 
         let numbers = [...signal].sort((a,b) => a - b);
-        console.log("Numbers " + numbers.slice(0, 5))
 
         let result = signal.length%2 !== 0 ? numbers[mid] : (numbers[mid-1] + numbers[mid]) / 2
-        //result = Number(result).toFixed(2)
 
         if(isNaN(result)){
-            console.log("this is not a number", result);
             result = -1
         }
-        console.log("Result " + result)
-
         return result.toFixed(2);
     }
-
 
     const handleSliderChange = (event, newValue) => {
             setValue(newValue);
@@ -519,7 +555,11 @@ export default function FileUpload() {
                 <Measures data={channels} />
             </div>
 
-            <p className="steps"> {t('step3')} </p>
+            <p className="steps">
+                {t('step3')}
+                <label className="mx-3"> {t('pleaseSaveTheData')} </label>
+            </p>
+
             <div className="buttons">
                 { showCSVSave && (
                     <Button onClick={printData} variant="outline-success"  className="button"> {t('saveCSV_ALL')} </Button>

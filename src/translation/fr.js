@@ -11,6 +11,7 @@ export const TranslationFR = {
     step1 : "Étape 1",
     step2 : "Étape 2",
     step3 : "Étape 3",
+    pleaseSaveTheData : "Sauvegardez vos données, s'il vous plaît",
     upload : "Télécharger",
     myData : "Mes données ",
     saveMyData : "Envoyer mes données",
