@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 
-const API_URL = 'http://localhost:8181/api/measures/'
+/*const API_URL = 'http://localhost:8181/api/measures/'
 
 const saveKeyData = (userID, keyDataArray) => {
     return axios.post(API_URL + 'users', {
@@ -23,4 +23,4 @@ export default {
     saveKeyData,
     getPatientsList,
     getKeyData
-}
+} */

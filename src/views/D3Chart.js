@@ -1,8 +1,7 @@
 import * as d3 from 'd3';
 //import usagetime from "../data/OnDuration.csv";
-//import usagetime from "../data/62ce8d0d6f99d1493af52d9e-2022-07-18T10 16 11.622Z.csv";
 import usagetime from "../data/62ceee38ba5772c8f771a526-2022-07-21T08 46 57.848Z.csv";
-import {useTranslation} from "react-i18next";
+
 
 const MARGIN = { TOP : 10, BOTTOM : 50, LEFT : 70, RIGHT : 10}
 const WIDTH = 1000 -MARGIN.LEFT -MARGIN.RIGHT;

@@ -5,6 +5,7 @@ import axios from "axios";
 import Table from "react-bootstrap/Table";
 import {useSelector} from "react-redux";
 import {LABELS_LIST} from "../constants/constants";
+import "./Views.css"
 
 
 
@@ -49,13 +50,12 @@ export default function DoctorsBoard(){
 
             for(let i=0; i<patients.length; i++){
                 let key = patients[i]._id
-                console.log("Key " + patients[i]._id)
+
 
                 const userMeasures =  measureslist.find(({ userId}) => userId === key)
 
                 const arr = JSON.stringify(userMeasures)
 
-                console.log("Measures " + arr)
 
                 if(arr){
                     joinedNamesAndMeasures.push({username : patients[i].username, ...userMeasures})
@@ -69,12 +69,11 @@ export default function DoctorsBoard(){
             return joinedNamesAndMeasures
         }
 
-     //   console.log("Patients " + patients + " measures " + measureslist)
 
         if(patients && measureslist){
             mergeData()
             setList(joinedNamesAndMeasures)
-            console.log("Data joined " + JSON.stringify(joinedNamesAndMeasures))
+
         }
 
 
@@ -83,13 +82,13 @@ export default function DoctorsBoard(){
 
     return (
         <div>
-            <h1>{t('patients')}</h1>
+            <h1 className="title">{t('patients')}</h1>
             <Table responsive>
                 <tbody>
                 <tr>
-                    <th>Name</th>
+                    <th className="table-responsive">Name</th>
                     {Array.from(LABELS_LIST).map((label,index)=>(
-                        <th key={index}>{t(label)}</th>
+                        <th key={index} className="table-responsive">{t(label)}</th>
                     ))}
                 </tr>
                 {Array.from(list).map((measure, index)=>(
@@ -104,6 +103,7 @@ export default function DoctorsBoard(){
                         <td>{measure.pressureMax}</td>
                         <td>{measure.leakMax}</td>
                         <td>{measure.ahi}</td>
+                        <td>{measure.oai}</td>
                         <td>{measure.cai}</td>
                         <td>{measure.uai}</td>
                         <td style={parseInt(measure.mark) > 70 ? { color : 'green'}:{color: 'red'}}>{measure.mark}</td>

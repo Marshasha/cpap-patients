@@ -12,10 +12,10 @@ export default function UserGuide () {
         <div className="faq-page">
             <h1 className="title">{t('userGuideChoice')}</h1>
             <div className="choice-container">
-                <Link to={'/infoDoctor'} className='nav-link'>
+                <Link to={'/infoDoctor'} className='nav-link-choice'>
                     {t('doctor')}
                 </Link>
-                <Link to={'/infoPatient'} className='nav-link'>
+                <Link to={'/infoPatient'} className='nav-link-choice'>
                     {t('patient')}
                 </Link>
             </div>

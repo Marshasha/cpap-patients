@@ -17,9 +17,9 @@ import { history } from '../helpers/history'
 
 const lngs = {
     FR : { nativeName: 'FR' },
-    EN : { nativeName: 'EN' },
-    DE: { nativeName: 'DE' },
+    DE : { nativeName: 'DE' },
     IT: { nativeName: 'IT' },
+    EN: { nativeName: 'EN' },
 }
 
 
