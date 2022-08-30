@@ -6,6 +6,7 @@ export const TranslationFR = {
     fileUpload : "Ajouter le fichier EDF",
     login : "Se connecter",
     signup : "S'inscrire",
+    signout : "Déconnexion",
     chooseFile: "Choisissez votre fichier EDF ",
     evaluateTherapy : "Veuillez évaluer dans quelle mesure êtes-vous satisfait de votre thérapie : 0 - pas satisfait, 100 - très satisfait ",
     step1 : "Étape 1",

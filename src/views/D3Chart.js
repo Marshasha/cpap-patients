@@ -1,6 +1,9 @@
 import * as d3 from 'd3';
 //import usagetime from "../data/OnDuration.csv";
-import usagetime from "../data/62ceee38ba5772c8f771a526-2022-07-21T08 46 57.848Z.csv";
+//import usagetime from "../data/62ceee38ba5772c8f771a526-2022-07-21T08 46 57.848Z.csv";
+//import usagetime from "../data/62cd1abf897f6ef0e954b860-2022-08-30T08 18 41.719Z.csv";
+//import usagetime from "../data/62cd1abf897f6ef0e954b860-2022-08-30T08 21 34.896Z.csv";
+import usagetime from "../data/62cd1abf897f6ef0e954b860-2022-08-30T08 25 15.768Z.csv";
 
 
 const MARGIN = { TOP : 10, BOTTOM : 50, LEFT : 70, RIGHT : 10}

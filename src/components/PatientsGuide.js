@@ -12,7 +12,7 @@ export default function PatientsGuide (){
             <h2>{t('questionP1')}</h2>
             <p>{t('answerP1')}</p>
             <div>
-                <img src={'../images/Step1.PNG'} alt={`${t('step1')}`}/>
+                <img src={require('../images/Step1.PNG')} alt={`${t('step1')}`}/>
             </div>
             <h2>{t('questionP2')}</h2>
             <p>{t('answerP2')}</p>

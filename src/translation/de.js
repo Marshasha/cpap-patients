@@ -6,6 +6,7 @@ export const TranslationDE = {
     fileUpload : "EDF-Datei hochladen",
     login : "Einloggen",
     signup : "Anmeldung",
+    signout : "Ausloggen",
     chooseFile: "Bitte wählen Sie Ihre EDF-Datei aus",
     evaluateTherapy : "Bitte bewerten Sie, wie zufrieden Sie mit Ihrer Therapie sind: 0 – nicht zufrieden, 100 – sehr zufrieden ",
     step1 : "Schritt 1",

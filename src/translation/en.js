@@ -6,6 +6,7 @@ export const TranslationEN = {
     fileUpload : "Upload EDF File",
     login : "LogIn",
     signup : "SignUp",
+    signout : "Sign out",
     chooseFile: "Please select your EDF file",
     evaluateTherapy : "Please evaluate how are you satisfied with your therapy: 0 - not satisfied, 100 - very satisfied ",
     step1 : "Step 1",

@@ -107,7 +107,7 @@ function Navigation(){
                                 </li>
                                 <li className='nav-item'>
                                     <a href='/login' className='nav-link' onClick={logOut}>
-                                        Log Out
+                                        {t('signout')}
                                     </a>
                                 </li>
                             </div>

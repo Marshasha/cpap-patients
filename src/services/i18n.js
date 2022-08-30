@@ -5,6 +5,7 @@ import { DEFAULT_LANGUAGE } from "../constants/constants";
 import { TranslationEN } from "../translation/en";
 import { TranslationFR } from "../translation/fr";
 import { TranslationDE} from "../translation/de";
+import { TranslationIT } from "../translation/it";
 
 
 const resources = {
@@ -16,7 +17,11 @@ const resources = {
     },
     DE: {
         translation: TranslationDE,
+    },
+    IT : {
+        translation : TranslationIT,
     }
+
 };
 
 i18n
