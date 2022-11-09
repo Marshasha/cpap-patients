@@ -1,0 +1,145 @@
+
+.logo {
+    height: 100px;
+    width: 200px;
+}
+
+.logo-container{
+    height: 100px;
+    width: 200px;
+}
+
+.nav-item{
+    margin-left: 10px;
+}
+
+.nav-link{
+
+    flex-direction: row;
+    justify-content: center;
+    margin-right: 50px;
+    color : darkgreen;
+
+}
+
+.nav-link-choice{
+    flex-direction: row;
+    justify-content: center;
+    margin-right: 50px;
+    color : darkgreen;
+    border-radius: 25px;
+    padding : 15px;
+    border: 1px solid darkgreen;
+
+}
+
+.label{
+    color : darkgreen;
+    -ms-text-size-adjust: auto;
+    font-weight: bolder;
+    font-size: medium;
+}
+
+.slider{
+    display: flex;
+    align-items: center;
+}
+
+.login-title{
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.login-form{
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 5px 10px 5px 10px;
+    border-radius: 15px;
+    border-color: green;
+    outline: none;
+    text-align: center;
+}
+
+::placeholder{
+    color: lightgreen;
+    font-size: 13px;
+    padding-left: 10px;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+.btn-login{
+    text-align: center;
+    padding: 5px 10px 5px 10px;
+    border-radius: 10px;
+    border: none;
+    background-color: #61dafb;
+    text-transform: uppercase;
+    color: white;
+    margin-top: 15px;
+}
+
+.faq-page {
+    text-align: center;
+}
+
+.choice-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25px;
+
+}
+
+.warning{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color : red;
+}
+
+.button{
+    margin-right: 10px;
+}
+
+.steps{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+.table-responsive{
+    color : green;
+    font-style: normal;
+    font-weight : normal;
+}
+
+.title{
+
+    display: flex;
+    align-items: center;
+    color : green;
+    font-weight: normal;
+    font-size: larger;
+    font-weight: normal;
+    justify-content: center;
+    margin-top: 5px;
+}
+
+.buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+
